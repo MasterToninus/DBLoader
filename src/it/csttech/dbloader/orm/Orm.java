@@ -12,8 +12,8 @@ public class Orm{
   public Orm(){
 
   }
-  public void buildInfo(){
-    
+  public static BeanInfo buildInfo(String className) throws ClassNotFoundException{
+    return new BeanInfo(Class.forName(className));
   }
 
 }

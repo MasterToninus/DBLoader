@@ -24,5 +24,5 @@ out*
 *.db
 
 #Ignore user conf
-config/etltools.properties
+config/dbloader.properties
 config/log4j2.xml
