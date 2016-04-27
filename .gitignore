@@ -10,3 +10,19 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Ignore Doc
+**/docs/
+
+# Ignore Log
+**/*.log
+
+=======
+# Ignore dat file
+**/*.dat
+out*
+*.db
+
+#Ignore user conf
+config/etltools.properties
+config/log4j2.xml
