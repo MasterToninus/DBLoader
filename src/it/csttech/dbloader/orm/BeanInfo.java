@@ -9,9 +9,9 @@ public class BeanInfo{
   Method[] allMethods;
 
   /**
-   * @arg è una class implement serializable
-   * @return [description]
-   */
+  * @arg è una class implement serializable
+  * @return [description]
+  */
   public BeanInfo(Class<?> clazz){
     this.clazz = clazz;
     this.allMethods = clazz.getDeclaredMethods();
@@ -30,7 +30,7 @@ public class BeanInfo{
   public List<Method> getSetters(){
     List<Method> methodsList = new ArrayList<Method>();
     for (Method m : allMethods){
-      if(m.getName().contains("set")  ){
+      if(m.getName().contains("set")){
         methodsList.add(m);
       }
     }
@@ -42,7 +42,6 @@ public class BeanInfo{
       System.out.format("invoking %s( )%n", m.getName());
       m.setAccessible(true);
     }
-
   }
 
 }
