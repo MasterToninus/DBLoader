@@ -40,11 +40,14 @@ public class UseDBLoader {
       beanInfo.test();
 
       Record record = new Record();
+	//Object[] object {1, "Pippo", new Date(12/12/2012), 1.56, true};
       Method metodo = beanInfo.getSetters().get(0);
       //System.out.println(metodo.getName() + " " + metodo.getReturnType() + " " + metodo.getParameterTypes());
-      metodo.invoke(record,"1");
+      metodo.invoke(record, 1);
       //System.out.format(" %s ", record.getName());
-	System.out.println("\n" + beanInfo.getGetters());
+	System.out.println("\n");	
+	for (int i = 0; i < 5; i++)
+		System.out.println(beanInfo.getGetters().get(i).getName() + " " + beanInfo.getSetters().get(i).getName());
 
 
 
