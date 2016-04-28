@@ -21,34 +21,43 @@ public class Record implements java.io.Serializable {
 	private double height;
 	private boolean married;
 
+	@Getter( order = 1 )
   public int getId() {
     return this.id;
   }
+	@Setter( order = 1 )
   public void setId(int id) {
     this.id = id;
   }
+	@Getter( order = 2 )
   public String getName() {
     return this.name;
   }
+	@Setter( order = 2 )
   public void setName(String name) {
     this.name = name;
   }
+	@Getter( order = 3 )
   public Date getBirthday() {
     return this.birthday;
   }
+	@Setter( order = 3 )
   public void setBirthday(Date birthday) {
     this.birthday = birthday;
   }
+	@Getter( order = 4 )
 	public double getHeight() {
     return this.height;
   }
+	@Setter( order = 4 )
   public void setHeight(double height) {
     this.height = height;
   }
-  // Diversa sintassi per gli attributi boolean ( 'is' al posto di 'get' )
-  public boolean isMarried() {
+	@Getter( order = 5 )
+	public boolean isMarried() {
     return this.married;
   }
+	@Setter( order = 5 )
   public void setMarried(boolean married) {
     this.married = married;
   }
