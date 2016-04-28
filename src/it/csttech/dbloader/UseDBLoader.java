@@ -41,9 +41,10 @@ public class UseDBLoader {
 
       Record record = new Record();
       Method metodo = beanInfo.getSetters().get(0);
-      System.out.println(metodo.getName() + " " + metodo.getReturnType() + " " + metodo.getParameterTypes());
+      //System.out.println(metodo.getName() + " " + metodo.getReturnType() + " " + metodo.getParameterTypes());
       metodo.invoke(record,"1");
-      System.out.format(" %s ", record.getName());
+      //System.out.format(" %s ", record.getName());
+	System.out.println("\n" + beanInfo.getGetters());
 
 
 

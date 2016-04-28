@@ -3,6 +3,10 @@ package it.csttech.dbloader.orm;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ArrayList;
+import java.text.Annotation;
+import it.csttech.dbloader.entities.Getter;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class BeanInfo{
   Class<?> clazz;
@@ -24,7 +28,7 @@ public class BeanInfo{
         methodsList.add(m);
       }
     }
-    return methodsList;
+    return sortMethods(methodsList);
   }
 
   public List<Method> getSetters(){
@@ -42,6 +46,20 @@ public class BeanInfo{
       System.out.format("invoking %s( )%n", m.getName());
       m.setAccessible(true);
     }
+  }
+
+  private List<Method> sortMethods( List<Method> unSorted ) {
+	Collections.sort(unSorted, new Comparator<Method>() {
+        	@Override
+        	public int compare(Method method2, Method method1) {
+
+			Getter getter1 = method1.getAnnotation(Getter.class);
+			Getter getter2 = method2.getAnnotation(Getter.class);
+			return  getter2.order() - getter1.order();
+				
+        	}
+    	});
+	return unSorted;
   }
 
 }
