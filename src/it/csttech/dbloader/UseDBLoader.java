@@ -15,6 +15,8 @@ import java.util.Properties;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.util.Date;
+
 /**
 * A cli interface to launch a simple ETL Suite
 *
@@ -36,22 +38,15 @@ public class UseDBLoader {
     Properties prop = readProperties(System.getProperty("prop.File"));
 
     try{
-      BeanInfo beanInfo = Orm.buildInfo(prop.getProperty("bean.class"));
-      beanInfo.test();
-
-      Record record = new Record();
-	//Object[] object {1, "Pippo", new Date(12/12/2012), 1.56, true};
-      Method metodo = beanInfo.getSetters().get(0);
-      //System.out.println(metodo.getName() + " " + metodo.getReturnType() + " " + metodo.getParameterTypes());
-      metodo.invoke(record, 1);
-      //System.out.format(" %s ", record.getName());
-	System.out.println("\n");	
-	for (int i = 0; i < 5; i++)
-		System.out.println(beanInfo.getGetters().get(i).getName() + " " + beanInfo.getSetters().get(i).getName());
-
-
-
-
+      	BeanInfo beanInfo = Orm.buildInfo(prop.getProperty("bean.class"));
+      	beanInfo.test();
+      	Record record = new Record();
+	Object[] object = {1, "Pippo", new Date(1450656000000L), 1.56, true};
+	System.out.println("\n");
+	for (int i = 0; i < 5; i++) {
+		beanInfo.getSetters().get(i).invoke(record, object[i]);
+		System.out.println(beanInfo.getGetters().get(i).invoke(record));
+	}
     } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException ex){
       ex.printStackTrace();
     }
