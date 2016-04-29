@@ -5,9 +5,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.util.SortedSet;
 import java.util.*;
-import java.text.Annotation;
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Comparator;
+import it.csttech.dbloader.entities.Getter;
+import it.csttech.dbloader.entities.Setter;
 
 public class BeanInfo{
   private final Class<?> clazz;
@@ -25,27 +27,26 @@ public class BeanInfo{
     Method[] allMethods = clazz.getDeclaredMethods();
     Field[] allFields = clazz.getDeclaredFields();
     fillMethods(allFields, allMethods);
+	fillMethods(allFields);
   }
 
   private void fillMethods(Method[] allMethods){
-    HashMap<String,Method> gettersBuffer = new HashMap<String,Method>();
-    HashMap<String,Method> settersBuffer = new HashMap<String,Method>();
+    HashMap<String,Method> getters = new HashMap<String,Method>();
+    HashMap<String,Method> setters = new HashMap<String,Method>();
 
     for (Method m : allMethods){
       String name = m.getName();
       System.out.println(name);
       if(name.contains("get")){
-        gettersBuffer.put(name.substring(3).toLowerCase() , m);
+        getters.put(name.substring(3).toLowerCase() , m);
       }
       else if(name.contains("is") ){
-        gettersBuffer.put(name.substring(2).toLowerCase()  , m);
+        getters.put(name.substring(2).toLowerCase()  , m);
       }
       else if(name.contains("set") ){
-        settersBuffer.put(name.substring(3).toLowerCase()  , m);
+        setters.put(name.substring(3).toLowerCase()  , m);
       }
     }
-    getters = new HashMap<String,Method>(gettersBuffer);
-    setters = new HashMap<String,Method>(settersBuffer);
   }
 
   private void fillMethods(Field[] allFields, Method[] allMethods){
@@ -60,6 +61,22 @@ public class BeanInfo{
             setters.put(f.getName().toLowerCase(), m);
         }
       }
+    }
+  }
+
+  private void fillMethods(Field[] allFields){
+    //getters = new HashMap<String,Method>();
+    //setters = new HashMap<String,Method>();
+    for (Field f : allFields) {
+	String name = f.getName();
+	if(f.isAnnotationPresent(Setter.class)) {
+		StringBuffer methodName = new StringBuffer("set");
+		methodName.append(name.substring(0, 1).toUpperCase());
+		methodName.append(name.substring(1).toLowerCase());
+		//setters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), f.getType()));
+		System.out.println(methodName);
+	}
+
     }
   }
 
