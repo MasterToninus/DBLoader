@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import java.lang.reflect.InvocationTargetException;
+import it.csttech.dbloader.entities.Record;
 
 import java.util.Date;
 import java.util.Random;
@@ -46,21 +47,19 @@ public class ReflectionDbLoader {
       beanInfo.test();
 
       Object record =  beanInfo.getInstance(); //si puo fare di meglio? Interfaccia record?
+	//Record trueRecord = new Record();
+      String[] columns = {"id", "name", "birthday", "height", "married"};
       Object[] object = {1, "Pippo", new Date(1450656000000L), 1.56, true};
       System.out.println("\n");
-      /*for (int i = 0; i < 5; i++) {
-        beanInfo.getSetters().get(i).invoke(record, object[i]);
-        System.out.println(beanInfo.getGetters().get(i).invoke(record));
-      }*/
-      int j = 0;
+
       java.util.HashMap<String,Method> getters = beanInfo.getGetters();
-      /*
-      for(Method m : getters) { //SortedSet o List sorted manually?
-        beanInfo.getSetters().get(j).invoke(record, object[j]);
-        j++;
-        System.out.println(m.invoke(record));
+      java.util.HashMap<String,Method> setters = beanInfo.getSetters();
+
+      for(int j = 0; j < getters.size(); j++) {
+	setters.get(columns[j]).invoke(record, object[j]);
+        System.out.println(getters.get(columns[j]).invoke(record));
       }
-      */
+
     } catch ( Exception ex){
       ex.printStackTrace();
     }
