@@ -1,8 +1,10 @@
 package it.csttech.dbloader.orm;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.ArrayList;
+import java.lang.reflect.Constructor;
+import java.util.SortedSet;
+import java.util.*;
 import java.text.Annotation;
 import it.csttech.dbloader.entities.Sortable;
 import java.util.Collections;
@@ -11,9 +13,8 @@ import java.util.Comparator;
 public class BeanInfo{
   private final Class<?> clazz;
   private final String clazzName;
-  private final Method[] allMethods;
-  private final List<Method> getters;
-  private final List<Method> setters;
+  private final HashMap<String,Method> getters;
+  private final HashMap<String,Method> setters;
 
   /**
   * @arg è una class implement serializable
@@ -22,19 +23,37 @@ public class BeanInfo{
   public BeanInfo(Class<?> clazz){
     this.clazz = clazz;
     this.clazzName = clazz.getName();
-    this.allMethods = clazz.getDeclaredMethods();
-    this.getters = fillGetters();
-    this.setters = fillSetters();
+    Method[] allMethods = clazz.getDeclaredMethods();
+    Field[] allFields = clazz.getFields();
+    fillMethods(allFields, allMethods);
   }
 
-  private List<Method> fillGetters(){
-    List<Method> methodsList = new ArrayList<Method>();
+  private void fillMethods(Method[] allMethods){
     for (Method m : allMethods){
       if(m.getName().contains("get") | m.getName().contains("is") ){
-        methodsList.add(m);
+        methodsSet.add(m);
+      }
+
+      if(m.getName().contains("set") ){
+        methodsSet.add(m);
       }
     }
-    return sortMethods(methodsList);
+
+    SortedSet<Method> methodsSet = new TreeSet<Method>( //Comparator non sarà qui. è classe o istanza?
+      new Comparator<Method>() {
+          	@Override
+          	public int compare(Method method2, Method method1) {
+              Sortable sort1 = method1.getAnnotation(Sortable.class);
+  			      Sortable sort2 = method2.getAnnotation(Sortable.class);
+  			    return  sort2.index() - sort1.index();
+          	}
+      	});
+    for (Method m : allMethods){
+      if(m.getName().contains("get") | m.getName().contains("is") ){
+        methodsSet.add(m);
+      }
+    }
+    return methodsSet;
   }
 
   public List<Method> fillSetters(){
@@ -62,21 +81,26 @@ public class BeanInfo{
 			Sortable sort1 = method1.getAnnotation(Sortable.class);
 			Sortable sort2 = method2.getAnnotation(Sortable.class);
 			return  sort2.index() - sort1.index();
-				
+
         	}
     	});
 	return unSorted;
   }
 
-   public List<Method> getSetters(){
-	return setters;
-   }
+  public List<Method> getSetters(){
+	  return setters;
+  }
 
-   public List<Method> getGetters(){
-	return getters;
-   }
+  public SortedSet<Method> getGetters(){
+	  return getters;
+  }
 
-   public String getClassName() {
-	return clazzName;
-   }
+  public String getClassName() {
+	 return clazzName;
+  }
+
+  //Restituisco object. dopo andrà castato!
+  public Object getInstance() throws java.lang.InstantiationException, java.lang.IllegalAccessException {
+    return clazz.newInstance();
+  }
 }

@@ -16,9 +16,11 @@ import java.util.Properties;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.Date;
-
+import java.util.Random;
 /**
 * A cli interface to launch a simple ETL Suite
+*
+* Questo va messo in una classe di test
 *
 * <p>
 * main che legge le prop con l'opt -D
@@ -37,19 +39,7 @@ public class UseDBLoader {
 
     Properties prop = readProperties(System.getProperty("prop.File"));
 
-    try{
-      	BeanInfo beanInfo = Orm.buildInfo(prop.getProperty("bean.class"));
-      	beanInfo.test();
-      	Record record = new Record();
-	Object[] object = {1, "Pippo", new Date(1450656000000L), 1.56, true};
-	System.out.println("\n");
-	for (int i = 0; i < 5; i++) {
-		beanInfo.getSetters().get(i).invoke(record, object[i]);
-		System.out.println(beanInfo.getGetters().get(i).invoke(record));
-	}
-    } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException ex){
-      ex.printStackTrace();
-    }
+
 
 
 
@@ -78,5 +68,6 @@ public class UseDBLoader {
     }
     return prop;
   }
+
 
 }

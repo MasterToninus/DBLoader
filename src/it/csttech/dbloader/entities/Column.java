@@ -3,8 +3,8 @@ package it.csttech.dbloader.entities;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Documented
-public @interface Sortable {
-    public int index() ;
+public @interface Column {
+    public String columnName() ;
 }

@@ -11,63 +11,60 @@ import java.util.Date;
 * @see <a href="https://en.wikipedia.org/wiki/JavaBeans"> JavaBeans <\a>
 * @see <a href="http://javarevisited.blogspot.it/2014/05/why-use-serialversionuid-inside-serializable-class-in-java.html" >Serial Version (???) <\a>
 */
+@Entities( tableName = "TEST")
 public class Record implements java.io.Serializable {
 
   private static final long serialVersionUID = 2L;
 
+  @Column( columnName = "ID" )
+  @Getter
+  @Setter
   private int id;
+  @Column( columnName = "NAME" )
+  @Getter
+  @Setter
   private String name;
+  @Column( columnName = "BIRTHDAY" )
+  @Getter
+  @Setter
   private Date birthday;
+  @Column( columnName = "HEIGHT" )
+  @Getter
+  @Setter
   private double height;
+  @Column( columnName = "MARRIED" )
+  @Getter
+  @Setter
   private boolean married;
 
-  @Getter
-  @Sortable(index=1)
+
   public int getId() {
     return this.id;
   }
-  @Setter
-  @Sortable(index=1)
   public void setId(int id) {
     this.id = id;
   }
-  @Getter
-  @Sortable(index=2)
   public String getName() {
     return this.name;
   }
-  @Setter
-  @Sortable(index=2)
   public void setName(String name) {
     this.name = name;
   }
-  @Getter
-  @Sortable(index=3)
   public Date getBirthday() {
     return this.birthday;
   }
-  @Setter
-  @Sortable(index=3)
   public void setBirthday(Date birthday) {
     this.birthday = birthday;
   }
-  @Getter
-  @Sortable(index=4)
   public double getHeight() {
     return this.height;
   }
-  @Setter
-  @Sortable(index=4)
   public void setHeight(double height) {
     this.height = height;
   }
-  @Getter
-  @Sortable(index=5)
   public boolean isMarried() {
     return this.married;
   }
-  @Setter
-  @Sortable(index=5)
   public void setMarried(boolean married) {
     this.married = married;
   }
@@ -94,6 +91,7 @@ public class Record implements java.io.Serializable {
 	else
 		return false;
   }
+
 
   @Override
   public int hashCode() {
