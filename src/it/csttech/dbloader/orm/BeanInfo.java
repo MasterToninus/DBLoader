@@ -23,8 +23,8 @@ public class BeanInfo{
     this.clazz = clazz;
     this.clazzName = clazz.getName();
     Method[] allMethods = clazz.getDeclaredMethods();
-    Field[] allFields = clazz.getFields();
-    fillMethods(allMethods);
+    Field[] allFields = clazz.getDeclaredFields();
+    fillMethods(allFields, allMethods);
   }
 
   private void fillMethods(Method[] allMethods){
@@ -46,8 +46,24 @@ public class BeanInfo{
     }
     getters = new HashMap<String,Method>(gettersBuffer);
     setters = new HashMap<String,Method>(settersBuffer);
-
   }
+
+  private void fillMethods(Field[] allFields, Method[] allMethods){
+    getters = new HashMap<String,Method>();
+    setters = new HashMap<String,Method>();
+    for (Method m : allMethods){
+      for (Field f : allFields) {
+        if(m.getName().toLowerCase().contains(f.getName().toLowerCase())) {
+          if((m.getName().contains("get") | m.getName().contains("is")))
+            getters.put(f.getName().toLowerCase(), m);
+          else if (m.getName().contains("set"))
+            setters.put(f.getName().toLowerCase(), m);
+        }
+      }
+    }
+  }
+
+
 
   public void test(){
     for (String key : this.getters.keySet()) {
