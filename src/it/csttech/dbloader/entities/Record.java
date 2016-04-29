@@ -11,7 +11,7 @@ import java.util.Date;
 * @see <a href="https://en.wikipedia.org/wiki/JavaBeans"> JavaBeans <\a>
 * @see <a href="http://javarevisited.blogspot.it/2014/05/why-use-serialversionuid-inside-serializable-class-in-java.html" >Serial Version (???) <\a>
 */
-@Entities( tableName = "TEST")
+@Entity( tableName = "TEST")
 public class Record implements java.io.Serializable {
 
   private static final long serialVersionUID = 2L;

@@ -6,15 +6,14 @@ import java.lang.reflect.Constructor;
 import java.util.SortedSet;
 import java.util.*;
 import java.text.Annotation;
-import it.csttech.dbloader.entities.Sortable;
 import java.util.Collections;
 import java.util.Comparator;
 
 public class BeanInfo{
   private final Class<?> clazz;
   private final String clazzName;
-  private final HashMap<String,Method> getters;
-  private final HashMap<String,Method> setters;
+  private  HashMap<String,Method> getters;
+  private  HashMap<String,Method> setters;
 
   /**
   * @arg è una class implement serializable
@@ -25,73 +24,42 @@ public class BeanInfo{
     this.clazzName = clazz.getName();
     Method[] allMethods = clazz.getDeclaredMethods();
     Field[] allFields = clazz.getFields();
-    fillMethods(allFields, allMethods);
+    fillMethods(allMethods);
   }
 
   private void fillMethods(Method[] allMethods){
-    for (Method m : allMethods){
-      if(m.getName().contains("get") | m.getName().contains("is") ){
-        methodsSet.add(m);
-      }
+    HashMap<String,Method> gettersBuffer = new HashMap<String,Method>();
+    HashMap<String,Method> settersBuffer = new HashMap<String,Method>();
 
-      if(m.getName().contains("set") ){
-        methodsSet.add(m);
+    for (Method m : allMethods){
+      String name = m.getName();
+      System.out.println(name);
+      if(name.contains("get")){
+        gettersBuffer.put(name.substring(3).toLowerCase() , m);
+      }
+      else if(name.contains("is") ){
+        gettersBuffer.put(name.substring(2).toLowerCase()  , m);
+      }
+      else if(name.contains("set") ){
+        settersBuffer.put(name.substring(3).toLowerCase()  , m);
       }
     }
+    getters = new HashMap<String,Method>(gettersBuffer);
+    setters = new HashMap<String,Method>(settersBuffer);
 
-    SortedSet<Method> methodsSet = new TreeSet<Method>( //Comparator non sarà qui. è classe o istanza?
-      new Comparator<Method>() {
-          	@Override
-          	public int compare(Method method2, Method method1) {
-              Sortable sort1 = method1.getAnnotation(Sortable.class);
-  			      Sortable sort2 = method2.getAnnotation(Sortable.class);
-  			    return  sort2.index() - sort1.index();
-          	}
-      	});
-    for (Method m : allMethods){
-      if(m.getName().contains("get") | m.getName().contains("is") ){
-        methodsSet.add(m);
-      }
-    }
-    return methodsSet;
-  }
-
-  public List<Method> fillSetters(){
-    List<Method> methodsList = new ArrayList<Method>();
-    for (Method m : allMethods){
-      if(m.getName().contains("set")){
-        methodsList.add(m);
-      }
-    }
-    return sortMethods(methodsList);
   }
 
   public void test(){
-    for (Method m : allMethods) {
-      System.out.format("invoking %s( )%n", m.getName());
-      m.setAccessible(true);
+    for (String key : this.getters.keySet()) {
+      System.out.format("Key = %s \t %s \t %s %n",key ,getters.get(key).getName(), setters.get(key).getName() );
     }
   }
 
-  private List<Method> sortMethods( List<Method> unSorted ) {
-	Collections.sort(unSorted, new Comparator<Method>() {
-        	@Override
-        	public int compare(Method method2, Method method1) {
-
-			Sortable sort1 = method1.getAnnotation(Sortable.class);
-			Sortable sort2 = method2.getAnnotation(Sortable.class);
-			return  sort2.index() - sort1.index();
-
-        	}
-    	});
-	return unSorted;
-  }
-
-  public List<Method> getSetters(){
+  public HashMap<String,Method> getSetters(){
 	  return setters;
   }
 
-  public SortedSet<Method> getGetters(){
+  public HashMap<String,Method> getGetters(){
 	  return getters;
   }
 

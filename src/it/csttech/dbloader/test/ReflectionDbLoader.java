@@ -44,6 +44,7 @@ public class ReflectionDbLoader {
     try{
       BeanInfo beanInfo = Orm.buildInfo(prop.getProperty("bean.class"));
       beanInfo.test();
+
       Object record =  beanInfo.getInstance(); //si puo fare di meglio? Interfaccia record?
       Object[] object = {1, "Pippo", new Date(1450656000000L), 1.56, true};
       System.out.println("\n");
@@ -52,13 +53,15 @@ public class ReflectionDbLoader {
         System.out.println(beanInfo.getGetters().get(i).invoke(record));
       }*/
       int j = 0;
-      java.util.SortedSet<Method> getters = beanInfo.getGetters();
+      java.util.HashMap<String,Method> getters = beanInfo.getGetters();
+      /*
       for(Method m : getters) { //SortedSet o List sorted manually?
         beanInfo.getSetters().get(j).invoke(record, object[j]);
         j++;
         System.out.println(m.invoke(record));
       }
-    } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException | InstantiationException ex){
+      */
+    } catch ( Exception ex){
       ex.printStackTrace();
     }
 
@@ -103,9 +106,10 @@ public class ReflectionDbLoader {
   */
   //public<T> T randomBean(BeanInfo beanInfo){
   //  T bean = beanInfo.getInstance();
+  /*
   public static Object randomBean(BeanInfo beanInfo) throws IllegalAccessException, InstantiationException, InvocationTargetException{
     Object bean = beanInfo.getInstance();
-    List<Method> beanSetters = beanInfo.getSetters();
+    java.util.HashMap<String,Method> beanSetters = beanInfo.getSetters();
     Random random = new Random(1L); //Long seed, idealmente la data in millisecondi
     for (Method m : beanSetters){
       System.out.println(m.getGenericParameterTypes());
@@ -113,6 +117,6 @@ public class ReflectionDbLoader {
     }
     return bean;
   }
-
+*/
 
 }
