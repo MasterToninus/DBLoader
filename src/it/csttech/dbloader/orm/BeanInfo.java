@@ -16,9 +16,10 @@ public class BeanInfo{
   private  HashMap<String,Method> setters;
 
   /**
-  * @arg è una class implement serializable
-  * @return [description]
-  */
+   * [BeanInfo description]
+   * @param  clazz [description]
+   * @return       [description]
+   */
   public BeanInfo(Class<?> clazz){
     this.clazz = clazz;
     this.clazzName = clazz.getName();
@@ -28,24 +29,21 @@ public class BeanInfo{
   }
 
   private void fillMethods(Method[] allMethods){
-    HashMap<String,Method> gettersBuffer = new HashMap<String,Method>();
-    HashMap<String,Method> settersBuffer = new HashMap<String,Method>();
-
+    getters = new HashMap<String,Method>();
+    setters = new HashMap<String,Method>();
     for (Method m : allMethods){
       String name = m.getName();
       System.out.println(name);
       if(name.contains("get")){
-        gettersBuffer.put(name.substring(3).toLowerCase() , m);
+        getters.put(name.substring(3).toLowerCase() , m);
       }
       else if(name.contains("is") ){
-        gettersBuffer.put(name.substring(2).toLowerCase()  , m);
+        getters.put(name.substring(2).toLowerCase()  , m);
       }
       else if(name.contains("set") ){
-        settersBuffer.put(name.substring(3).toLowerCase()  , m);
+        setters.put(name.substring(3).toLowerCase()  , m);
       }
     }
-    getters = new HashMap<String,Method>(gettersBuffer);
-    setters = new HashMap<String,Method>(settersBuffer);
   }
 
   private void fillMethods(Field[] allFields, Method[] allMethods){
