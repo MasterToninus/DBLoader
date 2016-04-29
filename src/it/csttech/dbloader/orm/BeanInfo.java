@@ -28,15 +28,16 @@ public class BeanInfo{
     fillMethods(allFields, allMethods);
   }
 
-  private void fillMethods(Method[] allMethods){
+  private void fillMethods(Field[] allFields; Method[] allMethods){
     for (Method m : allMethods){
-      if(m.getName().contains("get") | m.getName().contains("is") ){
-        methodsSet.add(m);
-      }
-
-      if(m.getName().contains("set") ){
-        methodsSet.add(m);
-      }
+	for (Field f : allFields) {
+	    if(m.getName.toLowerCase().contains(f.getName.toLowerCase())) {
+      		if((m.getName().contains("get") | m.getName().contains("is")))
+			getters.put(f.getName().toLowerCase(), m)
+      		else if (m.getName().contains("set"))
+			setters.put(f.getName().toLowerCase(), m)
+	    }
+	}
     }
 
     SortedSet<Method> methodsSet = new TreeSet<Method>( //Comparator non sarà qui. è classe o istanza?
