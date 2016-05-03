@@ -42,18 +42,22 @@ public class BeanInfo{
     }
   }
 
+  /**
+   * Non è failsafe perchè cerca metodi che contengono get /set nel nome
+   * @param allMethods [description]
+   */
   private void fillMethods(Method[] allMethods){
     getters = new HashMap<String,Method>();
     setters = new HashMap<String,Method>();
     for (Method m : allMethods){
       String name = m.getName();
-      if(name.contains("get")){
+      if(name.startsWith("get")){
         getters.put(name.substring(3).toLowerCase() , m);
       }
-      else if(name.contains("is") ){
+      else if(name.startsWith("is") ){
         getters.put(name.substring(2).toLowerCase()  , m);
       }
-      else if(name.contains("set") ){
+      else if(name.startsWith("set") ){
         setters.put(name.substring(3).toLowerCase()  , m);
       }
     }
@@ -65,9 +69,9 @@ public class BeanInfo{
     for (Method m : allMethods){
       for (Field f : allFields) {
         if(m.getName().toLowerCase().contains(f.getName().toLowerCase())) {
-          if((m.getName().contains("get") | m.getName().contains("is")))
+          if((m.getName().startsWith("get") | m.getName().startsWith("is")))
             getters.put(f.getName().toLowerCase(), m);
-          else if (m.getName().contains("set"))
+          else if (m.getName().startsWith("set"))
             setters.put(f.getName().toLowerCase(), m);
         }
       }
@@ -124,5 +128,5 @@ public class BeanInfo{
 }
 
 class BeanException extends Exception {
-  private static final long serialVersionUID = 1L; 
+  private static final long serialVersionUID = 1L;
 }

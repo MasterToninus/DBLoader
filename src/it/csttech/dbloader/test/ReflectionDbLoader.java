@@ -38,7 +38,6 @@ public class ReflectionDbLoader {
 
   public static void main(String[] args ){
 
-
     Properties prop = readProperties(System.getProperty("prop.File"));
 
     try{
