@@ -19,8 +19,8 @@ public class BeanInfo{
 
   private final Class<?> clazz;
   private final String clazzName;
-  private  HashMap<String,Method> getters;
-  private  HashMap<String,Method> setters;
+  private  HashMap<String, Method> getters;
+  private  HashMap<String, Method> setters;
 
   /**
    * [BeanInfo description]
@@ -84,13 +84,13 @@ public class BeanInfo{
     for (Field f : allFields) {
       String name = f.getName();
       if(f.isAnnotationPresent(Setter.class)) {
-        StringBuffer methodName = new StringBuffer("set");
+        StringBuilder methodName = new StringBuilder("set"); // è consigliabile usare stringbuilder se non si hanno thread concorrenti
         methodName.append(name.substring(0, 1).toUpperCase());
         methodName.append(name.substring(1).toLowerCase());
         setters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), f.getType()));
       }
       if(f.isAnnotationPresent(Getter.class)){
-        StringBuffer methodName = new StringBuffer();
+        StringBuilder methodName = new StringBuilder();
         if(f.getType().isAssignableFrom(Boolean.TYPE)) methodName.append("is");
         else methodName.append("get");
         methodName.append(name.substring(0, 1).toUpperCase());
