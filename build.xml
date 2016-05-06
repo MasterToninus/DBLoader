@@ -83,7 +83,7 @@
 	</target>
 
 	<target name="ivy-retrieve" description="Download dependecies." >
-		<ivy:configure override="true" file="${ivy.install.dir}/ivy-settings.xml" />
+		<ivy:configure file="${ivy.install.dir}/ivy-settings.xml" />
 		<ivy:retrieve sync="true" conf="*" type="jar,bundle" pattern="${lib.dir}/[artifact]-[revision].[ext]" />
 	</target>
 

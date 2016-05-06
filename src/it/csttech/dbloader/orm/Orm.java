@@ -10,7 +10,7 @@ public class Orm{
   //beaninfo deve essere un attributo di Orm all'interno di una mappa con key il nome
   //anche con metodo getclass
   //possibile costruttore con argomento prop file
-  private HashMap<String,BeanInfo> beanInfoMap = new HashMap<String,BeanInfo>();
+  private HashMap<Class<?>,BeanInfo> beanInfoMap = new HashMap<Class<?>,BeanInfo>();
   static private Orm orm = null;
 
   private Orm(){
@@ -37,13 +37,20 @@ public class Orm{
   }
 
   public void addBeanClass(String beanClassName) throws ClassNotFoundException {
-    BeanInfo beanInfo = new BeanInfo(Class.forName(beanClassName));
-    beanInfoMap.put(beanClassName, beanInfo);
+    addBeanClass(Class.forName(beanClassName));
+  }
+
+  public void addBeanClass(Class<?> beanClass){
+    BeanInfo beanInfo = new BeanInfo(beanClass);
+    beanInfoMap.put(beanClass, beanInfo);
   }
 
   public BeanInfo getBeanInfo(String beanClassName) throws ClassNotFoundException {
-    return beanInfoMap.get(beanClassName);
+    return getBeanInfo(Class.forName(beanClassName));
   }
 
+  public BeanInfo getBeanInfo(Class<?> beanClass) {
+    return beanInfoMap.get(beanClass);
+  }
 
 }
