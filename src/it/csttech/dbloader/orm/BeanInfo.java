@@ -57,6 +57,7 @@ public class BeanInfo{
 
   private void fillFields(Field[] allFields) {
 
+	fieldInfoMap = new HashMap<String, FieldInfo>();
 	for (Field f : allFields)
 		fieldInfoMap.put(f.getName(), new FieldInfo(f));
   }
@@ -64,9 +65,9 @@ public class BeanInfo{
   private void fillMethods() throws NoSuchMethodException {
     getters = new HashMap<String,Method>();
     setters = new HashMap<String,Method>();
-    for (String key : fieldInfoMap.keySet) {
+    for (String key : fieldInfoMap.keySet()) {
       FieldInfo f = fieldInfoMap.get(key);
-      String name = f.getName();
+      String name = f.getFieldName();
       if(f.isSetter()) {
         StringBuilder methodName = new StringBuilder("set"); // è consigliabile usare stringbuilder se non si hanno thread concorrenti
         methodName.append(name.substring(0, 1).toUpperCase());
