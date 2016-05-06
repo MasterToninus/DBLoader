@@ -5,10 +5,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
 import java.util.*;
-import java.lang.annotation.Annotation;
+//import java.lang.annotation.Annotation;
 
 import it.csttech.dbloader.entities.Getter;
 import it.csttech.dbloader.entities.Setter;
+import it.csttech.dbloader.entities.Column;
+import it.csttech.dbloader.entities.Entity;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,8 +21,14 @@ public class BeanInfo{
 
   private final Class<?> clazz;
   private final String clazzName;
-  private  HashMap<String, Method> getters;
-  private  HashMap<String, Method> setters;
+  private HashMap<String, Method> getters;
+  private HashMap<String, Method> setters;
+  private HashMap<String, FieldInfo> fieldInfoMap;
+  private String tableName;
+  private String insertQuery;
+  private String createTableQuery;
+  //TODO private String varieQuery;
+  
 
   /**
    * [BeanInfo description]
@@ -30,11 +38,11 @@ public class BeanInfo{
   public BeanInfo(Class<?> clazz) {
     this.clazz = clazz;
     this.clazzName = clazz.getName();
-    Method[] allMethods = clazz.getDeclaredMethods();
-    Field[] allFields = clazz.getDeclaredFields();
-    //fillMethods(allFields, allMethods);
-	  try{
-      fillMethods(allFields);
+    this.tableName = clazz.getAnnotation(Entity.class).tableName();
+    try{
+	fillFields(clazz.getDeclaredFields());
+      	fillMethods();
+	generateQueries();
     } catch(Exception e ){
       //Questa eccezione di metodo non trovato secondo me va tradotta in una beaninfo exception (annotation dice che il field è un setter/getter ma il corrispettivo metodo non c'è)
       //Credo che tutte le exception di reflection andrebbero wrappate in un'eccezzione di beaninfo.
@@ -42,54 +50,30 @@ public class BeanInfo{
     }
   }
 
-  /**
-   * Non è failsafe perchè cerca metodi che contengono get /set nel nome
-   * @param allMethods [description]
-   */
-  private void fillMethods(Method[] allMethods){
-    getters = new HashMap<String,Method>();
-    setters = new HashMap<String,Method>();
-    for (Method m : allMethods){
-      String name = m.getName();
-      if(name.startsWith("get")){
-        getters.put(name.substring(3).toLowerCase() , m);
-      }
-      else if(name.startsWith("is") ){
-        getters.put(name.substring(2).toLowerCase()  , m);
-      }
-      else if(name.startsWith("set") ){
-        setters.put(name.substring(3).toLowerCase()  , m);
-      }
-    }
+  private void generateQueries() {
+
+
   }
 
-  private void fillMethods(Field[] allFields, Method[] allMethods){
-    getters = new HashMap<String,Method>();
-    setters = new HashMap<String,Method>();
-    for (Method m : allMethods){
-      for (Field f : allFields) {
-        if(m.getName().toLowerCase().contains(f.getName().toLowerCase())) {
-          if((m.getName().startsWith("get") | m.getName().startsWith("is")))
-            getters.put(f.getName().toLowerCase(), m);
-          else if (m.getName().startsWith("set"))
-            setters.put(f.getName().toLowerCase(), m);
-        }
-      }
-    }
+  private void fillFields(Field[] allFields) {
+
+	for (Field f : allFields)
+		fieldInfoMap.put(f.getName(), new FieldInfo(f));
   }
 
-  private void fillMethods(Field[] allFields) throws NoSuchMethodException {
+  private void fillMethods() throws NoSuchMethodException {
     getters = new HashMap<String,Method>();
     setters = new HashMap<String,Method>();
-    for (Field f : allFields) {
+    for (String key : fieldInfoMap.keySet) {
+      FieldInfo f = fieldInfoMap.get(key);
       String name = f.getName();
-      if(f.isAnnotationPresent(Setter.class)) {
+      if(f.isSetter()) {
         StringBuilder methodName = new StringBuilder("set"); // è consigliabile usare stringbuilder se non si hanno thread concorrenti
         methodName.append(name.substring(0, 1).toUpperCase());
         methodName.append(name.substring(1).toLowerCase());
         setters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), f.getType()));
       }
-      if(f.isAnnotationPresent(Getter.class)){
+      if(f.isGetter()){
         StringBuilder methodName = new StringBuilder();
         if(f.getType().isAssignableFrom(Boolean.TYPE)) methodName.append("is");
         else methodName.append("get");
@@ -97,7 +81,6 @@ public class BeanInfo{
         methodName.append(name.substring(1).toLowerCase());
         getters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), (Class<?>[]) null));
       }
-
     }
   }
 
