@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='us-ascii'?>
+
+<ORM>
+  <DB-Settings>
+    <User></User>
+    <Password></Password>
+    <Driver>nomeclass</Driver>
+    <ConnectionUrl>nomeclass</ConnectionUrl>
+  </DB-Settings>
+
+  <DB-Settings
+  User="Sample Slide Show"
+  Password="Date of publication"
+  Driver="Yours Truly"
+  ConnectionUrl=""
+  />
+
+  <Entities>
+    <entity className="it.csttech. ... . record"/>
+  </Entities>
+
+</ORM>

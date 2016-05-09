@@ -35,7 +35,7 @@ public class FieldInfo{
     this.fieldName = field.getName();
     this.type = field.getType();
 
-    this.columnName = (field.isAnnotationPresent(Column.class)) ? field.getAnnotation(Column.class).columnName() : "n/a" ;
+    this.columnName = field.getAnnotation(Column.class).columnName();
     this.typeName = ojb(this.type);
     this.getter = field.isAnnotationPresent(Setter.class);
     this.setter = field.isAnnotationPresent(Getter.class);
@@ -67,6 +67,7 @@ public class FieldInfo{
 
   /**
    * Facciamo a mano una cosa che poi faremo in automatico (andrebbe estesa molto)
+   * 	ObJectRelationalBridge
    * @param  klazz [description]
    * @return string sql relativo al tipo di variabile [description]
    * @see <a href=https://db.apache.org/ojb/> link<\a>
@@ -74,7 +75,7 @@ public class FieldInfo{
   private static String ojb(Class<?> klazz){
     if(klazz.equals(String.class)) return "TEXT";
     else if(klazz.isPrimitive()) return klazz.getName().toUpperCase();
-    else if(klazz.equals(java.util.Date.class)) return "DATE";
+    else if(klazz.equals(java.util.Date.class)) return "DATETIME";
     else return "BLOB";
   }
 
