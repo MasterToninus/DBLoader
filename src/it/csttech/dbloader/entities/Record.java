@@ -14,15 +14,19 @@ import java.util.Date;
 @Entity( tableName = "TEST")
 public class Record implements java.io.Serializable {
 
-  private static final long serialVersionUID = 2L;
+  private static final long serialVersionUID = 3L;
 
   @Column( columnName = "ID" )
   @Getter
   @Setter
+  @NotNull
+  @PrimaryKey
+  @AutoIncrement
   private int id;
   @Column( columnName = "NAME" )
   @Getter
   @Setter
+  @NotNull
   private String name;
   @Column( columnName = "BIRTHDAY" )
   @Getter

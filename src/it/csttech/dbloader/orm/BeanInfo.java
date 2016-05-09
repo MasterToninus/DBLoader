@@ -50,16 +50,12 @@ public class BeanInfo{
     }
   }
 
-  private void generateQueries() {
-
-
-  }
-
   private void fillFields(Field[] allFields) {
 
 	fieldInfoMap = new HashMap<String, FieldInfo>();
 	for (Field f : allFields)
-		fieldInfoMap.put(f.getName(), new FieldInfo(f));
+		if (f.isAnnotationPresent(Column.class))
+			fieldInfoMap.put(f.getName(), new FieldInfo(f));
   }
 
   private void fillMethods() throws NoSuchMethodException {
@@ -85,9 +81,48 @@ public class BeanInfo{
     }
   }
 
+  private void generateQueries() {
+	generateCreateTableQuery();
+	generateInsertRecordQuery();	
+  }
+
+  private void generateCreateTableQuery() {
+	StringBuilder createTableQuery = new StringBuilder("CREATE TABLE IF NOT EXISTS " + tableName + " (" );
+	for (String key : fieldInfoMap.keySet()) {
+		FieldInfo f = fieldInfoMap.get(key);
+		createTableQuery.append(" " + f.getColumnName() + " " +  f.getTypeName());
+		if (f.isNotNull())
+			createTableQuery.append(" NOT NULL");
+		if (f.isPrimaryKey())
+			createTableQuery.append(" PRIMARY KEY");
+		if (f.isAutoIncrement())
+			createTableQuery.append(" AUTOINCREMENT");
+		createTableQuery.append(",");
+	}
+	createTableQuery.deleteCharAt(createTableQuery.length()-1);
+	createTableQuery.append(" )");
+	this.createTableQuery = createTableQuery.toString();
+  }
+
+  private void generateInsertRecordQuery() {
+	StringBuilder insertQuery = new StringBuilder("INSERT INTO " + tableName + " (" );
+	int numberOfFields = fieldInfoMap.size();
+	for (String key : fieldInfoMap.keySet()) {
+		FieldInfo f = fieldInfoMap.get(key);
+		insertQuery.append(" " + f.getColumnName() + ",");
+	}
+	insertQuery.deleteCharAt(insertQuery.length()-1);
+	insertQuery.append(" ) VALUES (");
+	for (int i = 0; i < numberOfFields; i++)
+		insertQuery.append(" ?,");
+	insertQuery.deleteCharAt(insertQuery.length()-1);
+	insertQuery.append(")");
+	this.insertQuery = insertQuery.toString();
+  }
 
 
   public void test(){
+    System.out.println(createTableQuery + "\n" + insertQuery + "\n");
     for (String key : this.getters.keySet()) {
       System.out.format("Key = %s \t %s \t %s %n",key ,getters.get(key).getName(), setters.get(key).getName() );
     }
