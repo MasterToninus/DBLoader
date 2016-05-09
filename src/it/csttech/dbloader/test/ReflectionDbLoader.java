@@ -41,8 +41,7 @@ public class ReflectionDbLoader {
     Properties prop = readProperties(System.getProperty("prop.File"));
 
     try{
-      Orm orm = Orm.getInstance();
-      orm.addBeanClass(prop.getProperty("bean.class"));
+      Orm orm = Orm.getInstance(prop.getProperty("orm.config"));
       BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
       beanInfo.test();
 

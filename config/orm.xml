@@ -2,21 +2,27 @@
 
 <ORM>
   <DB-Settings>
-    <User></User>
-    <Password></Password>
-    <Driver>nomeclass</Driver>
-    <ConnectionUrl>nomeclass</ConnectionUrl>
+    <User>user</User>
+    <Password>password</Password>
+    <Driver>org.sqlite.JDBC</Driver>
+    <ConnectionUrl>jdbc:sqlite:test.db</ConnectionUrl>
+    <!--
+      (jdbc:subprotocol:subname) e.g. :
+      jdbc:sqlite:database_file_path
+      jdbc:mysql://hostname/databasename
+    -->
   </DB-Settings>
-
+<!--
   <DB-Settings
-  User="Sample Slide Show"
-  Password="Date of publication"
-  Driver="Yours Truly"
-  ConnectionUrl=""
+    User="Sample Slide Show"
+    Password="Date of publication"
+    Driver="Yours Truly"
+    ConnectionUrl=""
   />
+-->
 
-  <Entities>
-    <entity className="it.csttech. ... . record"/>
-  </Entities>
+    <Entities>
+      <entity class="it.csttech.dbloader.entities.Record"/>
+    </Entities>
 
 </ORM>
