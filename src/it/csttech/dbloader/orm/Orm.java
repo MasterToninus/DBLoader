@@ -6,9 +6,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import net.sf.cglib.proxy.Enhancer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.io.File;
+import java.lang.reflect.Method;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -140,8 +144,27 @@ public class Orm{
     return beanInfoMap.get(beanClass);
   }
 
-  static public void save(Class<?> beanClass){
-    //gli passo un  bean e lo carica poi con getclass trovo l'oggetto relativo nel beaninfo
+  public void save(Object bean){
+	  Class<?> beanClazz = bean.getClass();
+	  HashMap<String,Method> getters = beanInfoMap.get(beanClazz).getGetters();
+	  
+	  try {
+			Enhancer enhancer = new Enhancer();
+			enhancer.setSuperclass(beanClazz);
+			enhancer.setCallback(new BeanInvocationHandler(bean));
+
+			Object proxy = enhancer.create();
+			
+			for (String key : getters.keySet()) {
+			      Method m = getters.get(key);
+			      m.invoke(proxy);
+			}
+			
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
   }
 
 

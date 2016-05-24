@@ -1,7 +1,5 @@
 package it.csttech.dbloader.test;
 
-import it.csttech.dbloader.entities.*;
-import it.csttech.dbloader.loader.*;
 import it.csttech.dbloader.orm.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,11 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import java.lang.reflect.InvocationTargetException;
-
 import java.util.Date;
-import java.util.Random;
-import java.util.List;
 
 /**
 * A cli interface to launch a simple ETL Suite
@@ -58,6 +52,10 @@ public class ReflectionDbLoader {
         setters.get(columns[j]).invoke(record, object[j]);
         System.out.println(getters.get(columns[j]).invoke(record));
       }
+      
+      System.out.println("\n ----------- Proxy part ------------- \n");
+      orm.save(record);
+      
     } catch ( Exception ex){
       ex.printStackTrace();
     }

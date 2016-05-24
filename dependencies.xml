@@ -8,6 +8,9 @@
 
         <!-- JDB connector -->
         <dependency org="org.xerial" name="sqlite-jdbc" rev="3.8.11.2" transitive="false"/>
+        
+        <!-- http://mvnrepository.com/artifact/cglib/cglib -->
+		<dependency org="cglib" name="cglib" rev="3.2.2"/>
 
     </dependencies>
 </ivy-module>
