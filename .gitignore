@@ -26,3 +26,6 @@ out*
 #Ignore user conf
 config/dbloader.properties
 config/log4j2.xml
+
+# Ignore bin
+**/bin

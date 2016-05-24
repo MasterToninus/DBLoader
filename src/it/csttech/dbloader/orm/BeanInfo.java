@@ -23,7 +23,7 @@ public class BeanInfo{
   private final String clazzName;
   private HashMap<String, Method> getters;
   private HashMap<String, Method> setters;
-  private HashMap<String, FieldInfo> fieldInfoMap;
+  private final HashMap<String, FieldInfo> fieldInfoMap;
   private String tableName;
   private String insertQuery;
   private String createTableQuery;
@@ -39,10 +39,11 @@ public class BeanInfo{
     this.clazz = clazz;
     this.clazzName = clazz.getName();
     this.tableName = clazz.getAnnotation(Entity.class).tableName();
+    fieldInfoMap = fillFields(clazz.getDeclaredFields());
     try{
-	fillFields(clazz.getDeclaredFields());
+    	
       	fillMethods();
-	generateQueries();
+      	generateQueries();
     } catch(Exception e ){
       //Questa eccezione di metodo non trovato secondo me va tradotta in una beaninfo exception (annotation dice che il field è un setter/getter ma il corrispettivo metodo non c'è)
       //Credo che tutte le exception di reflection andrebbero wrappate in un'eccezzione di beaninfo.
@@ -50,12 +51,13 @@ public class BeanInfo{
     }
   }
 
-  private void fillFields(Field[] allFields) {
+  private HashMap<String, FieldInfo> fillFields(Field[] allFields) {
 
-	fieldInfoMap = new HashMap<String, FieldInfo>();
+	HashMap<String, FieldInfo> fieldInfoMap = new HashMap<String, FieldInfo>();
 	for (Field f : allFields)
 		if (f.isAnnotationPresent(Column.class))
 			fieldInfoMap.put(f.getName(), new FieldInfo(f));
+	return fieldInfoMap;
   }
 
   private void fillMethods() throws NoSuchMethodException {
@@ -76,7 +78,7 @@ public class BeanInfo{
         else methodName.append("get");
         methodName.append(name.substring(0, 1).toUpperCase());
         methodName.append(name.substring(1).toLowerCase());
-        getters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), (Class<?>[]) null));
+        getters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), (Class<?>[]) null)); //finezza cast superfluo
       }
     }
   }

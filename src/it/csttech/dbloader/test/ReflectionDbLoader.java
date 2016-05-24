@@ -58,14 +58,9 @@ public class ReflectionDbLoader {
         setters.get(columns[j]).invoke(record, object[j]);
         System.out.println(getters.get(columns[j]).invoke(record));
       }
-
-
     } catch ( Exception ex){
       ex.printStackTrace();
     }
-
-
-
   }
 
   public static Properties readProperties( String propFile ){
@@ -91,8 +86,4 @@ public class ReflectionDbLoader {
     }
     return prop;
   }
-
-
-
-
 }
