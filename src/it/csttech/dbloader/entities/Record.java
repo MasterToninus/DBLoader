@@ -1,6 +1,6 @@
 package it.csttech.dbloader.entities;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
 * Javabean record.

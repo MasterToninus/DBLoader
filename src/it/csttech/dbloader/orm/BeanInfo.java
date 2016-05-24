@@ -98,7 +98,7 @@ public class BeanInfo{
 		if (f.isPrimaryKey())
 			createTableQuery.append(" PRIMARY KEY");
 		if (f.isAutoIncrement())
-			createTableQuery.append(" AUTOINCREMENT");
+			createTableQuery.append(""); //AUTOINCREMENT SERIAL
 		createTableQuery.append(",");
 	}
 	createTableQuery.deleteCharAt(createTableQuery.length()-1);
@@ -146,6 +146,33 @@ public class BeanInfo{
   public Object getInstance() throws java.lang.InstantiationException, java.lang.IllegalAccessException {
     return clazz.newInstance();
   }
+
+/**
+ * @return the tableName
+ */
+public String getTableName() {
+	return tableName;
+}
+
+/**
+ * @return the insertQuery
+ */
+public String getInsertQuery() {
+	return insertQuery;
+}
+
+/**
+ * @return the createTableQuery
+ */
+public String getCreateTableQuery() {
+	return createTableQuery;
+}
+
+public Set<String> getFieldKeySet() {
+	return fieldInfoMap.keySet();
+}
+
+
 }
 
 class BeanException extends Exception {

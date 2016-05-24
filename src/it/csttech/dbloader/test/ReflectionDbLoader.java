@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
 * A cli interface to launch a simple ETL Suite

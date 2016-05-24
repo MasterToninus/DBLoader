@@ -83,7 +83,7 @@ public class FieldInfo{
   private static String ojb(Class<?> klazz){		//Object Relational Bridge - make conversion from java to sql types.
     if(klazz.equals(String.class)) return "TEXT";
     else if(klazz.isPrimitive()) return klazz.getName().toUpperCase();
-    else if(klazz.equals(java.util.Date.class)) return "DATETIME";
+    else if(klazz.equals(java.util.Date.class)) return "DATE";
     else return "BLOB";
   }
 
