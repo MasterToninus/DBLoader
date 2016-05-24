@@ -2,10 +2,10 @@
 
 <ORM>
   <DB-Settings>
-    <User>user</User>
-    <Password>password</Password>
-    <Driver>org.sqlite.JDBC</Driver>
-    <ConnectionUrl>jdbc:sqlite:test.db</ConnectionUrl>
+    <User>postgres</User>
+    <Password>postgres</Password>
+    <Driver>org.postgresql.Driver</Driver>
+    <ConnectionUrl>jdbc:postgresql://192.168.0.170/ProvaDb</ConnectionUrl>
     <!--
       (jdbc:subprotocol:subname) e.g. :
       jdbc:sqlite:database_file_path

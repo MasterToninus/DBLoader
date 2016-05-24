@@ -35,30 +35,26 @@ public class Orm{
   private HashMap<Class<?>,BeanInfo> beanInfoMap = new HashMap<Class<?>,BeanInfo>();
   static final Logger log = LogManager.getLogger();
 
-  //Db connection parameter
-  private String username;
-  private String password;
-  private String driver;
-  private String connectionUrl;
+  private Connection conn = null;
 
   private Orm(){
   }
 
   private Orm(String xmlConfPath) throws OrmException {
-    readOrmConfigFile( xmlConfPath );
+    
+	String url = readOrmConfigFile( xmlConfPath );
 
-    Connection conn = null;
-    initDriver(driver);
-
-    //    try{
-    log.debug("Requesting Connection to " + connectionUrl );
-    //conn = DriverManager.getConnection(connectionUrl,username,password);     //throws SQLException
-
-    //    } catch (java.sql.SQLException ex ) { ex.printStackTrace(); }
-
+    try{
+    //log.debug("Requesting Connection to " + connectionUrl );
+    	conn = DriverManager.getConnection(url);     //throws SQLException
+    	if (conn != null) 
+    		log.debug("connection established!!!");
+    } catch (java.sql.SQLException ex ) { 
+    	throw new OrmException(ex.getMessage()); 
+    }
   }
 
-  private void readOrmConfigFile(String xmlConfPath) throws OrmException {
+  private String readOrmConfigFile(String xmlConfPath) throws OrmException {
     try{
       //Get Document Builder
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -74,10 +70,10 @@ public class Orm{
       Element entitiesElement = (Element)(document.getElementsByTagName("Entities")).item(0);
 
       //Parsing the db tag:
-      this.username = dbSettingElement.getElementsByTagName("User").item(0).getTextContent();
-      this.password = dbSettingElement.getElementsByTagName("Password").item(0).getTextContent();
-      this.driver = dbSettingElement.getElementsByTagName("Driver").item(0).getTextContent();
-      this.connectionUrl = dbSettingElement.getElementsByTagName("ConnectionUrl").item(0).getTextContent();
+      String username = dbSettingElement.getElementsByTagName("User").item(0).getTextContent();
+      String password = dbSettingElement.getElementsByTagName("Password").item(0).getTextContent();
+      String driver = dbSettingElement.getElementsByTagName("Driver").item(0).getTextContent();
+      String connectionUrl = dbSettingElement.getElementsByTagName("ConnectionUrl").item(0).getTextContent();
 
       //Parsing the entities tag
       NodeList nEntitiesList = entitiesElement.getElementsByTagName("entity");
@@ -90,22 +86,18 @@ public class Orm{
           addBeanClass( ((Element) node).getAttribute("class"));
         }
       }
+      
+      log.debug("Driver Loading : " + driver);
+      Class.forName(driver);
+      
+      String url = connectionUrl + "?user=" + username + "&password=" + password;
+      return url;
 
     } catch (javax.xml.parsers.ParserConfigurationException | org.xml.sax.SAXException | java.io.IOException | ClassNotFoundException ex ) {
       throw new OrmException("Config file parse failed", ex);
     }
 
   }
-
-  private void initDriver(final String driver) {
-    try {
-      log.trace("Driver Loading : " + driver);
-      Class.forName(driver);
-    } catch (final Exception e) {
-      log.error("Database driver error:" + e.getMessage());
-    }
-  }
-
 
   private void addBeanClass(String beanClassName) throws ClassNotFoundException {
     addBeanClass(Class.forName(beanClassName));
@@ -166,6 +158,14 @@ public class Orm{
 			e.printStackTrace();
 		}
   }
-
-
+  
+  public void destroy() {
+	  if (conn != null) {
+		  try {
+			  conn.close();
+		  } catch (SQLException sqlex) {
+			  log.fatal(sqlex.getMessage());
+		  }
+	  }
+  }
 }

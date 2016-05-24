@@ -11,6 +11,9 @@
         
         <!-- http://mvnrepository.com/artifact/cglib/cglib -->
 		<dependency org="cglib" name="cglib" rev="3.2.2"/>
+		
+		<!-- http://mvnrepository.com/artifact/postgresql/postgresql -->
+		<dependency org="postgresql" name="postgresql" rev="9.1-901-1.jdbc4"/>
 
     </dependencies>
 </ivy-module>

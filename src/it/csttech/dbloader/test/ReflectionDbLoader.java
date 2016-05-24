@@ -33,9 +33,10 @@ public class ReflectionDbLoader {
   public static void main(String[] args ){
 
     Properties prop = readProperties(System.getProperty("prop.File"));
+    Orm orm = null;
 
     try{
-      Orm orm = Orm.getInstance(prop.getProperty("orm.config"));
+      orm = Orm.getInstance(prop.getProperty("orm.config"));
       BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
       beanInfo.test();
 
@@ -56,8 +57,11 @@ public class ReflectionDbLoader {
       System.out.println("\n ----------- Proxy part ------------- \n");
       orm.save(record);
       
-    } catch ( Exception ex){
+    } catch ( Exception ex ){
       ex.printStackTrace();
+    } finally {
+    	if (orm != null)
+    		orm.destroy();
     }
   }
 
