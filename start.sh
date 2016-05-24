@@ -1,7 +1,7 @@
 #!/bin/bash
 
 	MAIN_CLASS_FILE="it.csttech.dbloader.UseDBLoader"
-	CLASS_PATH=".;lib/*;bin"
+	CLASS_PATH=".:lib/*:bin"
 	LOG_CONFIG="config/log4j2.xml"
 	PROPERTIES_FILE="config/dbloader.properties"
 

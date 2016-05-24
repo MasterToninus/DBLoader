@@ -29,3 +29,6 @@ config/log4j2.xml
 
 # Ignore bin
 **/bin
+
+# ignore lib
+lib/*
