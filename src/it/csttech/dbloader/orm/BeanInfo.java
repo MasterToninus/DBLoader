@@ -7,8 +7,6 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 //import java.lang.annotation.Annotation;
 
-import it.csttech.dbloader.entities.Getter;
-import it.csttech.dbloader.entities.Setter;
 import it.csttech.dbloader.entities.Column;
 import it.csttech.dbloader.entities.Entity;
 
@@ -138,6 +136,10 @@ public class BeanInfo{
 	  return getters;
   }
 
+  public Class<?> getClazz(){
+	  return clazz;
+  }
+  
   public String getClassName() {
 	 return clazzName;
   }
@@ -171,6 +173,15 @@ public String getCreateTableQuery() {
 public Set<String> getFieldKeySet() {
 	return fieldInfoMap.keySet();
 }
+
+/**
+ * @return the fieldInfoMap
+ */
+public HashMap<String, FieldInfo> getFieldInfoMap() {
+	return fieldInfoMap;
+}
+
+
 
 
 }
