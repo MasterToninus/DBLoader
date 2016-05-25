@@ -19,8 +19,8 @@ import it.csttech.dbloader.entities.Record;
  */
 public class MockRecord {
 	private final BeanInfo beanInfo;
-	private Random random = new Random();
-	// Map wich associate to each setters its nextrandom method (
+	private Random random = new Random();//TODO specire seed con time
+	// Map which associate to each setters its nextrandom method (
 	private final Map<Method, RandomOperation> setterRandomMap;
 	// l'estensione all' extract di file dovrebbe fare per ogni colonna un
 	// parse.
@@ -88,12 +88,11 @@ public class MockRecord {
 	}
 
 	private RandomOperation objRelation(Class<?> clazz) throws Exception {
-		System.out.println(clazz);
 		if ( clazz.equals(boolean.class)){
 			return  () -> random.nextBoolean();
 		}
 		else if ( clazz.equals(int.class)){
-			return  () -> random.nextInt();
+			return  () -> random.nextInt(1000);
 		}
 		else if ( clazz.equals(long.class)){
 			return  () -> random.nextLong();
@@ -105,7 +104,7 @@ public class MockRecord {
 			return  () -> random.nextDouble();
 		}
 		else if(clazz.equals(Date.class)){
-			return () -> new Date(random.nextLong());
+			return () -> new Date( (long) random.nextInt(13000000)*random.nextInt(13000000));
 		}
 		else if(clazz.equals(String.class)){
 			return () -> {
@@ -121,6 +120,10 @@ public class MockRecord {
 			else throw new Exception(); //TODO: specify exception
 	}
 
+	/** 
+	 * Test Main
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try {
 			BeanInfo beanInfo = new BeanInfo(Record.class);

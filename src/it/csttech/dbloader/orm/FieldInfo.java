@@ -80,7 +80,7 @@ public class FieldInfo{
    * @return string sql relativo al tipo di variabile [description]
    * @see <a href=https://db.apache.org/ojb/> link<\a>
    */
-  private static String ojb(Class<?> klazz){		//Object Relational Bridge - make conversion from java to sql types.
+  private static String ojb(Class<?> klazz){		//Object Relational Bridge - make conversion from java to postgres types.
     if(klazz.equals(String.class)) return "TEXT";
     else if(klazz.isPrimitive() && klazz.getName().toLowerCase().equals("double")) return "DOUBLE PRECISION";
     else if(klazz.isPrimitive()) return klazz.getName().toUpperCase();

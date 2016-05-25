@@ -59,6 +59,12 @@ public class ReflectionDbLoader {
 
 			System.out.println("\n ----------- Proxy part ------------- \n");
 			orm.save(record);
+			
+			for (int j = 0; j < 100; j++) {
+				MockRecord mockRecord = new MockRecord(beanInfo);
+				orm.save(mockRecord.next());
+			}
+			
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

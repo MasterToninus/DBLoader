@@ -172,7 +172,7 @@ public class Orm {
 			// execute insert SQL stetement
 			preparedStatementInsert.executeUpdate();
 
-			System.out.println("Record is inserted into DBUSER table!");
+			log.trace("Record is inserted into" + " ? " + " table!");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
