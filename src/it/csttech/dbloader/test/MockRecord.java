@@ -12,6 +12,11 @@ import java.util.Random;
 import it.csttech.dbloader.orm.BeanInfo;
 import it.csttech.dbloader.entities.Record;
 
+/**
+ * Preliminary version!
+ *	(WIP)
+ * 
+ */
 public class MockRecord {
 	private final BeanInfo beanInfo;
 	private Random random = new Random();
@@ -34,7 +39,7 @@ public class MockRecord {
 	 * voglio generare un mapping da metodi a metodi. ad ogni setter voglio
 	 * associare un metodo di random che genera il giusto argument in modo
 	 * random
-	 * 
+	 *  //TODO: specify exception
 	 * @return
 	 */
 	private Map<Method, RandomOperation> generateMapping() throws Exception {
@@ -61,6 +66,7 @@ public class MockRecord {
 
 	/**
 	 * Discarded stupid non functional method
+	 *  //TODO: specify exception
 	 * @param clazz
 	 * @return
 	 */
@@ -102,9 +108,17 @@ public class MockRecord {
 			return () -> new Date(random.nextLong());
 		}
 		else if(clazz.equals(String.class)){
-			return () -> new String("buh");
+			return () -> {
+				char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < 20; i++) {
+				    char c = chars[random.nextInt(chars.length)];
+				    sb.append(c);
+				}
+				return sb.toString();
+			};
 		}
-			else throw new Exception();
+			else throw new Exception(); //TODO: specify exception
 	}
 
 	public static void main(String[] args) {
