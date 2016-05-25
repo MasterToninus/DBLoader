@@ -153,22 +153,20 @@ public class Orm {
 
 			Object proxy = enhancer.create();
 
-			//TODO togliere lerciata
-			PreparedStatement preparedStatementCreate = conn.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS TEST ("
-					+ " BIRTHDAY DATE, NAME TEXT NOT NULL, ID INT NOT NULL, MARRIED BOOLEAN, HEIGHT REAL "
-					+ ")");
+			PreparedStatement preparedStatementCreate = conn.prepareStatement(beanInfo.getCreateTableQuery());
 
-			 preparedStatementCreate.executeUpdate();
+			preparedStatementCreate.executeUpdate();
 
 			PreparedStatement preparedStatementInsert = conn.prepareStatement(beanInfo.getInsertQuery());
 
 			int i = 1;
 			for (String key : fieldKeySet) {
 				Method m = getters.get(key);
-
-				preparedStatementInsert.setObject(i, m.invoke(proxy));
-				i++;
+				
+				if (!beanInfo.getFieldInfoMap().get(key).isAutoIncrement()) {
+					preparedStatementInsert.setObject(i, m.invoke(proxy));
+					i++;
+				}
 			}
 
 			// execute insert SQL stetement
