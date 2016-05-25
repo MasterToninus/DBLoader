@@ -92,13 +92,14 @@ public class BeanInfo{
 	StringBuilder createTableQuery = new StringBuilder("CREATE TABLE IF NOT EXISTS " + tableName + " (" );
 	for (String key : fieldInfoMap.keySet()) {
 		FieldInfo f = fieldInfoMap.get(key);
-		createTableQuery.append(" " + f.getColumnName() + " " +  f.getTypeName());
+		if (f.isAutoIncrement() && f.getTypeName().equals("INT"))
+			createTableQuery.append(" " + f.getColumnName() + " " +  "SERIAL");
+		else
+			createTableQuery.append(" " + f.getColumnName() + " " +  f.getTypeName());
 		if (f.isNotNull())
 			createTableQuery.append(" NOT NULL");
 		if (f.isPrimaryKey())
 			createTableQuery.append(" PRIMARY KEY");
-		if (f.isAutoIncrement())
-			createTableQuery.append(""); //AUTOINCREMENT SERIAL
 		createTableQuery.append(",");
 	}
 	createTableQuery.deleteCharAt(createTableQuery.length()-1);
@@ -108,14 +109,18 @@ public class BeanInfo{
 
   private void generateInsertRecordQuery() {
 	StringBuilder insertQuery = new StringBuilder("INSERT INTO " + tableName + " (" );
-	int numberOfFields = fieldInfoMap.size();
+	//int numberOfFields = fieldInfoMap.size();
+	int fieldCounter = 0;
 	for (String key : fieldInfoMap.keySet()) {
 		FieldInfo f = fieldInfoMap.get(key);
-		insertQuery.append(" " + f.getColumnName() + ",");
+		if (!(f.isAutoIncrement() && f.getTypeName().equals("INT"))) {
+			insertQuery.append(" " + f.getColumnName() + ",");
+			fieldCounter++;
+		}
 	}
 	insertQuery.deleteCharAt(insertQuery.length()-1);
 	insertQuery.append(" ) VALUES (");
-	for (int i = 0; i < numberOfFields; i++)
+	for (int i = 0; i < fieldCounter; i++)
 		insertQuery.append(" ?,");
 	insertQuery.deleteCharAt(insertQuery.length()-1);
 	insertQuery.append(")");
@@ -172,6 +177,9 @@ public Set<String> getFieldKeySet() {
 	return fieldInfoMap.keySet();
 }
 
+public HashMap<String, FieldInfo> getFieldInfoMap() {
+	return fieldInfoMap;
+}
 
 }
 
