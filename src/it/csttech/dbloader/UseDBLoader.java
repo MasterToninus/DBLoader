@@ -3,6 +3,7 @@ package it.csttech.dbloader;
 
 import it.csttech.dbloader.orm.*;
 import it.csttech.dbloader.test.MockRecord;
+import it.csttech.dbloader.test.MultiEntities;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,12 +34,32 @@ public class UseDBLoader {
 			orm = Orm.getInstance(prop.getProperty("orm.config"));
 			BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
 
-			for (int j = 0; j < 100; j++) {
+			for (int j = 0; j < 50; j++) {
 				MockRecord mockRecord = new MockRecord(beanInfo);
 				orm.save(mockRecord.next());
 			}
 			
+			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.CstEmployee");
+			for (int j = 0; j < 50; j++) {
+				MockRecord mockRecord = new MockRecord(beanInfo);
+				orm.save(mockRecord.next());
+			}
 
+			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.Address");
+			for (int j = 0; j < 50; j++) {
+				MockRecord mockRecord = new MockRecord(beanInfo);
+				orm.save(mockRecord.next());
+			}			
+
+			MultiEntities mul = new MultiEntities();
+			Class<?> beanClazz = mul.buddyBeanCreator();
+			orm.addBeanClass(beanClazz);
+			beanInfo = orm.getBeanInfo(beanClazz);
+			for (int j = 0; j < 50; j++) {
+				MockRecord mockRecord = new MockRecord(beanInfo);
+				orm.save(mockRecord.next());
+			}
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {

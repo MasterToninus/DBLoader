@@ -54,7 +54,7 @@ public class Orm {
 				log.debug("connection established!!!");
 
 		} catch (java.sql.SQLException ex) {
-			throw new OrmException(ex.getMessage());
+			throw new OrmException(ex.getMessage(),ex);
 		}
 	}
 
@@ -91,6 +91,7 @@ public class Orm {
 
 			log.debug("Driver Loading : " + driver);
 			Class.forName(driver);
+			 
 
 			String url = connectionUrl + "?user=" + username + "&password=" + password;
 			return url;
@@ -102,13 +103,23 @@ public class Orm {
 
 	}
 
-	private void addBeanClass(String beanClassName) throws ClassNotFoundException {
-		addBeanClass(Class.forName(beanClassName));
+	public void addBeanClass(String beanClassName) throws OrmException {
+		try {
+			addBeanClass(Class.forName(beanClassName));
+		} catch (ClassNotFoundException e) {
+			throw new OrmException("Class not Found",e);
+		}
 	}
 
-	private void addBeanClass(Class<?> beanClass) {
-		BeanInfo beanInfo = new BeanInfo(beanClass);
-		beanInfoMap.put(beanClass, beanInfo);
+	public void addBeanClass(Class<?> beanClass) throws OrmException {
+		BeanInfo beanInfo;
+		try {
+			beanInfo = new BeanInfo(beanClass);
+			beanInfoMap.put(beanClass, beanInfo);
+		} catch (BeanInfoException e) {
+			throw new OrmException("",e);
+		}
+
 	}
 
 	/**
@@ -162,7 +173,6 @@ public class Orm {
 			int i = 1;
 			for (String key : fieldKeySet) {
 				Method m = getters.get(key);
-				
 				if (!beanInfo.getFieldInfoMap().get(key).isAutoIncrement()) {
 					preparedStatementInsert.setObject(i, m.invoke(proxy));
 					i++;
@@ -172,7 +182,7 @@ public class Orm {
 			// execute insert SQL stetement
 			preparedStatementInsert.executeUpdate();
 
-			log.trace("Record is inserted into" + " ? " + " table!");
+			log.trace( beanInfo.getClassName() + " record is inserted into" + beanInfo.getTableName() + " table!");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -184,6 +194,7 @@ public class Orm {
 		if (conn != null) {
 			try {
 				conn.close();
+				log.trace( " Connection freed");
 			} catch (SQLException sqlex) {
 				log.fatal(sqlex.getMessage());
 			}

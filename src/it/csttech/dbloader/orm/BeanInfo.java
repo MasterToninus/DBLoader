@@ -2,7 +2,6 @@ package it.csttech.dbloader.orm;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
 
 import java.util.*;
 //import java.lang.annotation.Annotation;
@@ -33,52 +32,59 @@ public class BeanInfo{
    * @param  clazz [description]
    * @return       [description]
    */
-  public BeanInfo(Class<?> clazz) {
+  public BeanInfo(Class<?> clazz) throws BeanInfoException {
     this.clazz = clazz;
     this.clazzName = clazz.getName();
     this.tableName = clazz.getAnnotation(Entity.class).tableName();
+    log.trace("Building BeanInfo for : " + clazz);
+
     fieldInfoMap = fillFields(clazz.getDeclaredFields());
-    try{
-    	
-      	fillMethods();
-      	generateQueries();
-    } catch(Exception e ){
-      //Questa eccezione di metodo non trovato secondo me va tradotta in una beaninfo exception (annotation dice che il field è un setter/getter ma il corrispettivo metodo non c'è)
-      //Credo che tutte le exception di reflection andrebbero wrappate in un'eccezzione di beaninfo.
-      e.printStackTrace();
-    }
+	
+    fillMethods();
+    generateQueries();
+
   }
 
-  private HashMap<String, FieldInfo> fillFields(Field[] allFields) {
-
+  private HashMap<String, FieldInfo> fillFields(Field[] allFields) throws BeanInfoException{
+	try{ 
 	HashMap<String, FieldInfo> fieldInfoMap = new HashMap<String, FieldInfo>();
 	for (Field f : allFields)
 		if (f.isAnnotationPresent(Column.class))
 			fieldInfoMap.put(f.getName(), new FieldInfo(f));
 	return fieldInfoMap;
-  }
+	} catch (java.sql.SQLException ex){
+		throw new BeanInfoException("Cannot associate a sqltype to field",ex);
+	}
+}
 
-  private void fillMethods() throws NoSuchMethodException {
-    getters = new HashMap<String,Method>();
+  private void fillMethods() throws BeanInfoException  {
+	 try{
+	getters = new HashMap<String,Method>();
     setters = new HashMap<String,Method>();
+    log.trace("Building method List for : " + clazz);
     for (String key : fieldInfoMap.keySet()) {
       FieldInfo f = fieldInfoMap.get(key);
       String name = f.getFieldName();
       if(f.isSetter()) {
         StringBuilder methodName = new StringBuilder("set"); // è consigliabile usare stringbuilder se non si hanno thread concorrenti
         methodName.append(name.substring(0, 1).toUpperCase());
-        methodName.append(name.substring(1).toLowerCase());
-        setters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), f.getType()));
+        methodName.append(name.substring(1));
+        setters.put(name, clazz.getMethod(methodName.toString(), f.getType()));
+        log.trace("found : " + methodName.toString());
       }
       if(f.isGetter()){
         StringBuilder methodName = new StringBuilder();
         if(f.getType().isAssignableFrom(Boolean.TYPE)) methodName.append("is");
         else methodName.append("get");
         methodName.append(name.substring(0, 1).toUpperCase());
-        methodName.append(name.substring(1).toLowerCase());
-        getters.put(name.toLowerCase(), clazz.getMethod(methodName.toString(), (Class<?>[]) null)); //finezza cast superfluo
+        methodName.append(name.substring(1));
+        getters.put(name, clazz.getMethod(methodName.toString(), (Class<?>[]) null)); //finezza cast superfluo
+        log.trace("found : " + methodName.toString());
       }
     }
+	 } catch (NoSuchMethodException ex){
+		 throw new BeanInfoException("Cannot find method associated to @Getter @Setter",ex);
+	 }
   }
 
   private void generateQueries() {
@@ -103,6 +109,7 @@ public class BeanInfo{
 	createTableQuery.deleteCharAt(createTableQuery.length()-1);
 	createTableQuery.append(" )");
 	this.createTableQuery = createTableQuery.toString();
+	log.trace("Create Table statement : " + this.createTableQuery);
   }
 
   private void generateInsertRecordQuery() {
@@ -123,6 +130,7 @@ public class BeanInfo{
 	insertQuery.deleteCharAt(insertQuery.length()-1);
 	insertQuery.append(")");
 	this.insertQuery = insertQuery.toString();
+	log.trace("Insert record query : " + this.insertQuery);
   }
 
 
