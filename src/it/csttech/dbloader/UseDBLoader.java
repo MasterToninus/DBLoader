@@ -35,22 +35,22 @@ public class UseDBLoader {
 			BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
 
 			MockRecord mockRecord = new MockRecord(beanInfo);
-			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 10; j++) {
 				orm.save(mockRecord.next());
 			}
 			
 			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.CstEmployee");
 			mockRecord = new MockRecord(beanInfo);
 
-			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 10; j++) {
 				orm.save(mockRecord.next());
 			}
 
 			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.Address");
 			mockRecord = new MockRecord(beanInfo);
-			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 10; j++) {
 				orm.save(mockRecord.next());
-			}			
+			}
 
 			
 			BeanBuilder bb = new BeanBuilder();
@@ -61,9 +61,11 @@ public class UseDBLoader {
 			orm.addBeanClass(clazz);
 			beanInfo = orm.getBeanInfo(clazz);
 			mockRecord = new MockRecord(beanInfo);
-			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 10; j++) {
 				orm.save(mockRecord.next());
 			}			
+			
+			System.out.println("DONE!!");
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
