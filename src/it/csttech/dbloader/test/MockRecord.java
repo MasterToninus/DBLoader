@@ -111,15 +111,21 @@ public class MockRecord {
 	 * @throws Exception
 	 */
 	private RandomOperation objRelation(Class<?> clazz) throws it.csttech.dbloader.orm.OrmException {
-		if (clazz.equals(boolean.class)) {
+		if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
 			return () -> random.nextBoolean();
 		} else if (clazz.equals(int.class) || clazz.equals(Integer.class)) {
 			return () -> random.nextInt(1000);
-		} else if (clazz.equals(long.class)) {
+		} else if (clazz.equals(byte.class) || clazz.equals(Byte.class)) {
+			return () -> (byte) random.nextInt(1000);
+		} else if (clazz.equals(char.class) || clazz.equals(Character.class)) {
+			return () -> (char)random.nextInt(1000);
+		} else if (clazz.equals(short.class) || clazz.equals(Short.class)) {
+			return () -> (short) random.nextInt(1000);
+		} else if (clazz.equals(long.class) || clazz.equals(Long.class)) {
 			return () -> random.nextLong();
-		} else if (clazz.equals(float.class)) {
+		} else if (clazz.equals(float.class) || clazz.equals(Float.class)) {
 			return () -> random.nextFloat();
-		} else if (clazz.equals(double.class)) {
+		} else if (clazz.equals(double.class) || clazz.equals(Double.class)) {
 			return () -> random.nextDouble();
 		} else if (clazz.equals(Date.class)) {
 			return () -> new Date((long) random.nextInt(13000000) * random.nextInt(13000000));

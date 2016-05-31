@@ -78,7 +78,8 @@ public class FieldInfo{
    * 	ObJectRelationalBridge
    * @param  klazz [description]
    * @return string sql relativo al tipo di variabile [description]
-   * @see <a href=https://db.apache.org/ojb/> link<\a>
+   * @see <a href="https://db.apache.org/ojb"/> link<\a>
+   * @see <a href="http://www.service-architecture.com/articles/database/mapping_sql_and_java_data_types.html">Mapping sql to java type </a>
    */
   private static String ojb(Class<?> klazz) throws java.sql.SQLException {		//Object Relational Bridge - make conversion from java to postgres types.
 	if(klazz.equals(String.class)) return java.sql.JDBCType.VARCHAR.getName();
@@ -86,6 +87,9 @@ public class FieldInfo{
     else if(klazz.isPrimitive()) return klazz.getName().toUpperCase();
     else if(klazz.equals(Boolean.class)) return java.sql.JDBCType.BOOLEAN.getName();
     else if(klazz.equals(Integer.class)) return java.sql.JDBCType.INTEGER.getName();
+    else if(klazz.equals(Character.class)) return java.sql.JDBCType.CHAR.getName();
+    else if(klazz.equals(Byte.class)) return java.sql.JDBCType.TINYINT.getName();
+    else if(klazz.equals(Short.class)) return java.sql.JDBCType.SMALLINT.getName();
     else if(klazz.equals(Long.class)) return java.sql.JDBCType.BIGINT.getName();
     else if(klazz.equals(Float.class)) return java.sql.JDBCType.FLOAT.getName();
     else if(klazz.equals(Double.class)) return java.sql.JDBCType.DOUBLE.getName();	

@@ -1,9 +1,9 @@
 package it.csttech.dbloader;
 
 
+import it.csttech.dbloader.entities.BeanBuilder;
 import it.csttech.dbloader.orm.*;
 import it.csttech.dbloader.test.MockRecord;
-import it.csttech.dbloader.test.MultiEntities;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,31 +34,36 @@ public class UseDBLoader {
 			orm = Orm.getInstance(prop.getProperty("orm.config"));
 			BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
 
-			for (int j = 0; j < 50; j++) {
-				MockRecord mockRecord = new MockRecord(beanInfo);
+			MockRecord mockRecord = new MockRecord(beanInfo);
+/*			for (int j = 0; j < 50; j++) {
 				orm.save(mockRecord.next());
 			}
 			
 			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.CstEmployee");
+			mockRecord = new MockRecord(beanInfo);
+
 			for (int j = 0; j < 50; j++) {
-				MockRecord mockRecord = new MockRecord(beanInfo);
 				orm.save(mockRecord.next());
 			}
 
 			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.Address");
+			mockRecord = new MockRecord(beanInfo);
 			for (int j = 0; j < 50; j++) {
-				MockRecord mockRecord = new MockRecord(beanInfo);
+				orm.save(mockRecord.next());
+			}		*/	
+
+			
+			BeanBuilder bb = new BeanBuilder();
+			bb.init("RunTime");
+			bb.addField("id", Integer.class, false, true, true, false);
+			bb.addField("name", String.class, false, true, true, false);
+			Class<?> clazz = bb.load();
+			orm.addBeanClass(clazz);
+			beanInfo = orm.getBeanInfo(clazz);
+			mockRecord = new MockRecord(beanInfo);
+			for (int j = 0; j < 50; j++) {
 				orm.save(mockRecord.next());
 			}			
-
-			MultiEntities mul = new MultiEntities();
-			Class<?> beanClazz = mul.buddyBeanCreator();
-			orm.addBeanClass(beanClazz);
-			beanInfo = orm.getBeanInfo(beanClazz);
-			for (int j = 0; j < 50; j++) {
-				MockRecord mockRecord = new MockRecord(beanInfo);
-				orm.save(mockRecord.next());
-			}
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();

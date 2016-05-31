@@ -5,7 +5,9 @@ import java.io.Serializable;
 @Entity( tableName = "ADDRESSES")
 public class Address implements Serializable {
 
-	  @Column( columnName = "STREET" )
+	private static final long serialVersionUID = 1L;
+	
+	@Column( columnName = "STREET" )
 	  @Getter
 	  @Setter
 	  @NotNull
