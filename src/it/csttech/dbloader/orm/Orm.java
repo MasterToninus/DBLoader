@@ -19,10 +19,12 @@ import java.lang.reflect.Method;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Connection;
+
+import com.mchange.v2.c3p0.DataSources;
+import javax.sql.DataSource;
 
 /**
  * Objects relationship mapping (Singleton Pattern)
@@ -37,8 +39,9 @@ public class Orm {
 	static private Orm orm = null;
 	private HashMap<Class<?>, BeanInfo> beanInfoMap = new HashMap<Class<?>, BeanInfo>();
 	static final Logger log = LogManager.getLogger();
-
-	private Connection conn = null;
+	
+	//private Connection conn = null;
+	private DataSource conn_pooled = null;
 
 	private Orm() {
 	}
@@ -46,12 +49,15 @@ public class Orm {
 	private Orm(String xmlConfPath) throws OrmException {
 
 		String url = readOrmConfigFile(xmlConfPath);
+		Map<String, Object> overrides = c3p0Opts();
 
 		try {
 			// log.debug("Requesting Connection to " + connectionUrl );
-			conn = DriverManager.getConnection(url); // throws SQLException
-			if (conn != null)
-				log.debug("connection established!!!");
+			//conn = DriverManager.getConnection(url); // throws SQLException
+			DataSource conn_unpooled = DataSources.unpooledDataSource(url);
+			conn_pooled = DataSources.pooledDataSource( conn_unpooled, overrides );
+			if (conn_pooled != null)
+				log.debug("connection pool established!!!");
 
 		} catch (java.sql.SQLException ex) {
 			throw new OrmException(ex.getMessage());
@@ -101,6 +107,14 @@ public class Orm {
 		}
 
 	}
+	
+	Map<String, Object> c3p0Opts() {
+		Map<String, Object> overrides = new HashMap<String, Object>();
+		overrides.put("maxStatements", "200");         //Stringified property values work
+		overrides.put("maxPoolSize", new Integer(50)); //"boxed primitives" also work
+		overrides.put("com.mchange.v2.log.MLog", "log4j");
+		return overrides;
+	}
 
 	private void addBeanClass(String beanClassName) throws ClassNotFoundException {
 		addBeanClass(Class.forName(beanClassName));
@@ -147,11 +161,13 @@ public class Orm {
 		Map<String, Method> getters = beanInfo.getGetters();
 
 		try {
+			
 			Enhancer enhancer = new Enhancer();
 			enhancer.setSuperclass(beanClazz);
 			enhancer.setCallback(new BeanInvocationHandler(bean));
 
 			Object proxy = enhancer.create();
+			Connection conn = conn_pooled.getConnection();
 
 			PreparedStatement preparedStatementCreate = conn.prepareStatement(beanInfo.getCreateTableQuery());
 
@@ -171,7 +187,11 @@ public class Orm {
 
 			// execute insert SQL stetement
 			preparedStatementInsert.executeUpdate();
-
+			
+			preparedStatementCreate.close();
+			preparedStatementInsert.close();
+			conn.close(); //TODO chiedere: è giusto? rilascia o distrugge? nel conn pool rimane?
+			
 			log.trace("Record is inserted into" + " ? " + " table!");
 
 		} catch (Exception e) {
@@ -181,9 +201,9 @@ public class Orm {
 	}
 
 	public void destroy() {
-		if (conn != null) {
+		if (conn_pooled != null) {
 			try {
-				conn.close();
+				DataSources.destroy(conn_pooled);
 			} catch (SQLException sqlex) {
 				log.fatal(sqlex.getMessage());
 			}

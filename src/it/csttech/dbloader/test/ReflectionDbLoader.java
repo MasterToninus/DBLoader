@@ -68,10 +68,10 @@ public class ReflectionDbLoader {
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		} finally {
+		} /*finally {
 			if (orm != null)
 				orm.destroy();
-		}
+		}*/
 	}
 
 

@@ -37,7 +37,8 @@ public class UseDBLoader {
 				MockRecord mockRecord = new MockRecord(beanInfo);
 				orm.save(mockRecord.next());
 			}
-			
+
+			System.out.println("DONE!");
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
