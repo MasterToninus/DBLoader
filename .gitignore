@@ -12,7 +12,7 @@
 hs_err_pid*
 
 # Ignore Doc
-**/docs/
+**/doc/
 
 # Ignore Log
 **/*.log

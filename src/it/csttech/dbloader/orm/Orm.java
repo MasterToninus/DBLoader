@@ -27,7 +27,7 @@ import java.sql.PreparedStatement;
 /**
  * Objects relationship mapping (Singleton Pattern)
  *
- * @see Dom Trail : https://docs.oracle.com/javase/tutorial/jaxp/dom/index.html
+ * @see <a href="https://docs.oracle.com/javase/tutorial/jaxp/dom/index.html">Dom Trail</a>
  */
 public class Orm {
 	// beaninfo deve essere un attributo di Orm all'interno di una mappa con key
@@ -123,11 +123,10 @@ public class Orm {
 	}
 
 	/**
-	 * [getInstance description] Fare overload che legge file di properties
 	 * 
-	 * @param beanClassName
-	 *            [description]
-	 * @return [description]
+	 * @param xmlConfPath
+	 * @return
+	 * @throws OrmException
 	 */
 	static public Orm getInstance(String xmlConfPath) throws OrmException {
 		if (orm == null)
@@ -182,7 +181,7 @@ public class Orm {
 			// execute insert SQL stetement
 			preparedStatementInsert.executeUpdate();
 
-			log.trace( beanInfo.getClassName() + " record is inserted into" + beanInfo.getTableName() + " table!");
+			log.trace( beanInfo.getClassName() + " record is inserted into " + beanInfo.getTableName() + " table!");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

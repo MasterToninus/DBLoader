@@ -21,8 +21,8 @@ import java.sql.Date;
  * <p>
  * main che legge le prop con l'opt -D
  * 
- * @see http://stackoverflow.com/questions/5045608/proper-usage-of-java-d-
- *      command-line-parameters
+ * @see <a href="http://stackoverflow.com/questions/5045608/proper-usage-of-java-d-
+ *      command-line-parameters">link</a>
  *      </p>
  *
  * @author drago-orsone, MasterToninus

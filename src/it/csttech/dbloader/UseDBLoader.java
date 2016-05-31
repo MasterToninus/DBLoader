@@ -35,7 +35,7 @@ public class UseDBLoader {
 			BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
 
 			MockRecord mockRecord = new MockRecord(beanInfo);
-/*			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 50; j++) {
 				orm.save(mockRecord.next());
 			}
 			
@@ -50,7 +50,7 @@ public class UseDBLoader {
 			mockRecord = new MockRecord(beanInfo);
 			for (int j = 0; j < 50; j++) {
 				orm.save(mockRecord.next());
-			}		*/	
+			}			
 
 			
 			BeanBuilder bb = new BeanBuilder();

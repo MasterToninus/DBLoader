@@ -16,7 +16,7 @@ import it.csttech.dbloader.entities.Record;
  * 
  * <p>
  * Possible Extension: Basically it can be used to random generating an istance
- * of any class using the reflection reflection!
+ * of any class using the reflection!!
  * <ul>
  * <li>constructor take inside a class object
  * <li>all the fields are stored trough getFields;

@@ -36,7 +36,6 @@ public class BeanBuilder {
 	
 	public BeanBuilder( String tableName ){
 		init(tableName);
-		init = true;
 	}
 
 	/**
@@ -68,6 +67,7 @@ public class BeanBuilder {
 	}
 
 	public BeanBuilder init(String tableName) {
+		init = true;
 		this.classBuilder = new ByteBuddy().with(AnnotationRetention.ENABLED).subclass(Object.class)
 				.name("BB." + tableName).annotateType(AnnotationDescription.Builder.ofType(Entity.class)
 						.define("tableName", tableName.toUpperCase()).build());
@@ -82,7 +82,7 @@ public class BeanBuilder {
 	 * @param isGetter
 	 * @param isSetter
 	 * @param isAutoIncrement
-	 * @return
+	 * @return this
 	 */
 	public BeanBuilder addField(String fieldName, Class<?> fieldType, boolean isPrimary, boolean isGetter,
 			boolean isSetter, boolean isAutoIncrement) {
@@ -112,7 +112,8 @@ public class BeanBuilder {
 
 	}
 
-	public Class<?> load() {
+	public Class<?> load() throws NullPointerException {
+		if (!init) throw new NullPointerException("BeanBuilder " + this + " is not initializated.");
 		return classBuilder.make().load(this.getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
 				.getLoaded();
 	}

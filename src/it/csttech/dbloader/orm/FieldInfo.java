@@ -24,10 +24,11 @@ public class FieldInfo{
   private final boolean notNull;
   private final boolean autoIncrement;
 
-  /**
-   * [FieldInfo description]
-   * @return [description]
-   */
+/**
+ * 
+ * @param field
+ * @throws java.sql.SQLException
+ */
   public FieldInfo(Field field) throws java.sql.SQLException {
     this.fieldName = field.getName();
     this.type = field.getType();

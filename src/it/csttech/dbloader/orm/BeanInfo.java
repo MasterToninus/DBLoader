@@ -28,9 +28,9 @@ public class BeanInfo{
   
 
   /**
-   * [BeanInfo description]
-   * @param  clazz [description]
-   * @return       [description]
+   * 
+   * @param clazz
+   * @throws BeanInfoException
    */
   public BeanInfo(Class<?> clazz) throws BeanInfoException {
     this.clazz = clazz;
