@@ -60,7 +60,7 @@ public class Orm {
 				log.debug("connection pool established!!!");
 
 		} catch (java.sql.SQLException ex) {
-			throw new OrmException(ex.getMessage());
+			throw new OrmException(ex.getMessage(),ex);
 		}
 	}
 
@@ -116,13 +116,23 @@ public class Orm {
 		return overrides;
 	}
 
-	private void addBeanClass(String beanClassName) throws ClassNotFoundException {
-		addBeanClass(Class.forName(beanClassName));
+	public void addBeanClass(String beanClassName) throws OrmException {
+		try {
+			addBeanClass(Class.forName(beanClassName));
+		} catch (ClassNotFoundException e) {
+			throw new OrmException("Class not Found",e);
+		}
 	}
 
-	private void addBeanClass(Class<?> beanClass) {
-		BeanInfo beanInfo = new BeanInfo(beanClass);
-		beanInfoMap.put(beanClass, beanInfo);
+	public void addBeanClass(Class<?> beanClass) throws OrmException {
+		BeanInfo beanInfo;
+		try {
+			beanInfo = new BeanInfo(beanClass);
+			beanInfoMap.put(beanClass, beanInfo);
+		} catch (BeanInfoException e) {
+			throw new OrmException("",e);
+		}
+
 	}
 
 	/**
@@ -192,7 +202,7 @@ public class Orm {
 			preparedStatementInsert.close();
 			conn.close(); //TODO chiedere: è giusto? rilascia o distrugge? nel conn pool rimane?
 			
-			log.trace("Record is inserted into" + " ? " + " table!");
+			log.trace( beanInfo.getClassName() + " record is inserted into" + beanInfo.getTableName() + " table!");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -204,6 +214,7 @@ public class Orm {
 		if (conn_pooled != null) {
 			try {
 				DataSources.destroy(conn_pooled);
+				log.trace( " Connection freed");
 			} catch (SQLException sqlex) {
 				log.fatal(sqlex.getMessage());
 			}
