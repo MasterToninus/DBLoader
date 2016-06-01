@@ -27,6 +27,7 @@ out*
 config/dbloader.properties
 config/log4j2.xml
 config/orm.xml
+config/c3p0.xml
 
 # Ignore bin
 **/bin
