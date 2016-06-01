@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT" >
+			<PatternLayout pattern="%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<File name="MainFile" fileName="log/main.log">
+			<PatternLayout pattern="%d{dd/MM/yy HH:mm:ss} [%t] %-5level %logger{36} - %msg%n" />
+		</File>
+		<File name="TestFile" fileName="log/test.log">
+			<PatternLayout pattern="%d{dd/MM/yy HH:mm:ss} [%t] %-5level %logger{36} - %msg%n" />
+		</File>
+		<File name="OrmFile" fileName="log/orm.log">
+			<PatternLayout pattern="%d{dd/MM/yy HH:mm:ss} [%t] %-5level %logger{36} - %msg%n" />
+		</File>
+	</Appenders>
+	<Loggers>
+		<Logger name="it.csttech.dbloader.orm" level="DEBUG"  additivity="true" >
+			 <AppenderRef ref="OrmFile" />
+		</Logger>
+		<Logger name="it.csttech.dbloader.test" level="TRACE"  additivity="true" >
+			 <AppenderRef ref="TestFile" />
+		</Logger>
+		<Logger name="it.csttech.dbloader.UseDBoader" level="TRACE"  additivity="true" >
+			 <AppenderRef ref="MainFile" />
+		</Logger>
+		<Root level="INFO">
+			<AppenderRef ref="STDOUT" level="INFO" />
+		</Root>
+	</Loggers>
+</Configuration>

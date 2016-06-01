@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='us-ascii'?>
+
+<ORM>
+  <DB-Settings>
+    <User>postgres</User>
+    <Password>postgres</Password>
+    <Driver>org.postgresql.Driver</Driver>
+    <ConnectionUrl>jdbc:postgresql://192.168.0.155/ProvaDb</ConnectionUrl>
+    <!--
+      (jdbc:subprotocol:subname) e.g. :
+      jdbc:sqlite:database_file_path
+      jdbc:mysql://hostname/databasename
+    -->
+  </DB-Settings>
+
+
+    <Entities>
+      <entity class="it.csttech.dbloader.entities.Record"/>
+      <entity class="it.csttech.dbloader.entities.Address"/>
+      <entity class="it.csttech.dbloader.entities.CstEmployee"/>
+    </Entities>
+    
+    <c3p0-Settings>
+    	<property name="com.mchange.v2.log.MLog">fallback</property>
+		<property name="com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL">SEVERE</property>
+		<property name="com.mchange.v2.c3p0.cfg.xml">config/c3p0.xml</property>
+    </c3p0-Settings>
+
+</ORM>
