@@ -27,45 +27,18 @@ public class BeanBuilder {
 	private DynamicType.Builder<?> classBuilder;
 	private boolean init = false;
 
-	/**
-	 * 
-	 */
-	public BeanBuilder() {
-		// TODO Auto-generated constructor stub
-	}
+
+	public BeanBuilder() { }
 	
 	public BeanBuilder( String tableName ){
 		init(tableName);
 	}
 
 	/**
-	 * Test Main
+	 * 
+	 * @param tableName
+	 * @return
 	 */
-	public static void main(String[] args) throws Exception {
-		BeanBuilder bb = new BeanBuilder();
-		bb.init("Tabellina");
-		bb.addField("id", Integer.class, false, true, true, false);
-		bb.addField("isBul", Boolean.class, false, true, true, false);
-		bb.addField("caratter", Character.class, false, true, true, false);
-		Class<?> clazz = bb.load();
-
-		// Creation
-		Object myBean = clazz.newInstance();
-
-		// Reflection
-		System.out.format("classname = %s %n Annotations = %s  %n Fields = %s %n Methods = %s %n",
-				myBean.getClass().getName(), java.util.Arrays.asList(myBean.getClass().getAnnotations()),
-				java.util.Arrays.asList(myBean.getClass().getFields()),
-				java.util.Arrays.asList(myBean.getClass().getMethods()));
-		for (Field f : (myBean.getClass().getFields()))
-			System.out.println(f.getName() + " : " + java.util.Arrays.asList(f.getAnnotations()));
-		// BeanInfo
-		BeanInfo beanInfo = new BeanInfo(myBean.getClass());
-		MockRecord mockRecord = new MockRecord(beanInfo, System.currentTimeMillis());
-		System.out.println(mockRecord.next());
-
-	}
-
 	public BeanBuilder init(String tableName) {
 		init = true;
 		this.classBuilder = new ByteBuddy().with(AnnotationRetention.ENABLED).subclass(Object.class)
@@ -118,4 +91,47 @@ public class BeanBuilder {
 				.getLoaded();
 	}
 
+	/**
+	 * Test Main
+	 */
+	public static void main(String[] args) throws Exception {
+		//Runtime bean class generation
+		BeanBuilder bb = new BeanBuilder();
+		bb.init("Tabellina");
+		bb.addField("id", Integer.class, false, true, true, false);
+		bb.addField("isBul", Boolean.class, false, true, true, false);
+		bb.addField("caratter", Character.class, false, true, true, false);
+		Class<?> clazz = bb.load();
+
+		// Instantiation
+		Object myBean = clazz.newInstance();
+
+		// Reflection		
+		System.out.format("classname = %s %n Annotations = %s  %n Fields = %s %n Methods = %s %n",
+				myBean.getClass().getName(), 
+				java.util.Arrays.asList(myBean.getClass().getAnnotations())
+					.stream()
+					.map(annotation -> annotation.annotationType().getSimpleName())
+					.collect(java.util.stream.Collectors.toList()),
+				java.util.Arrays.asList(myBean.getClass().getFields())
+					.stream()
+					.map(field -> field.getName())
+					.collect(java.util.stream.Collectors.toList()),
+				java.util.Arrays.asList(myBean.getClass().getDeclaredMethods())
+					.stream()
+					.map(method -> method.getName())
+					.collect(java.util.stream.Collectors.toList()));
+		for (Field f : (myBean.getClass().getFields()))
+			System.out.println(f.getName() + " : " + java.util.Arrays.asList(f.getAnnotations())
+			.stream()
+			.map(annotation -> annotation.annotationType().getSimpleName())
+			.collect(java.util.stream.Collectors.toList()));
+
+		// BeanInfo
+		BeanInfo beanInfo = new BeanInfo(myBean.getClass());
+		MockRecord mockRecord = new MockRecord(beanInfo, System.currentTimeMillis());
+		System.out.println(mockRecord.next());
+
+	}
+	
 }

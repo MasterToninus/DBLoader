@@ -43,7 +43,6 @@ public class MockRecord {
 	 */
 	private final Map<Method, RandomOperation> setterRandomMap;
 
-	
 	public MockRecord(BeanInfo beanInfo) throws it.csttech.dbloader.orm.OrmException {
 		this(beanInfo, new Random());
 	}
@@ -118,7 +117,7 @@ public class MockRecord {
 		} else if (clazz.equals(byte.class) || clazz.equals(Byte.class)) {
 			return () -> (byte) random.nextInt(1000);
 		} else if (clazz.equals(char.class) || clazz.equals(Character.class)) {
-			return () -> (char)random.nextInt(1000);
+			return () -> (char) random.nextInt(1000);
 		} else if (clazz.equals(short.class) || clazz.equals(Short.class)) {
 			return () -> (short) random.nextInt(1000);
 		} else if (clazz.equals(long.class) || clazz.equals(Long.class)) {

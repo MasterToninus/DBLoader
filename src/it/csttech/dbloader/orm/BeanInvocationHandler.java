@@ -35,6 +35,6 @@ public class BeanInvocationHandler implements InvocationHandler {
 	}
 	
 	private Object realSubject = null;
-	static final Logger log = LogManager.getLogger();
+	static final Logger log = LogManager.getLogger(BeanInvocationHandler.class.getName());
 	
 }

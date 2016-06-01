@@ -21,7 +21,8 @@ import java.sql.Date;
  * <p>
  * main che legge le prop con l'opt -D
  * 
- * @see <a href="http://stackoverflow.com/questions/5045608/proper-usage-of-java-d-
+ * @see <a href=
+ *      "http://stackoverflow.com/questions/5045608/proper-usage-of-java-d-
  *      command-line-parameters">link</a>
  *      </p>
  *
@@ -30,7 +31,7 @@ import java.sql.Date;
  */
 public class ReflectionDbLoader {
 
-	static final Logger log = LogManager.getLogger();
+	static final Logger log = LogManager.getLogger(ReflectionDbLoader.class.getName());
 
 	public static void main(String[] args) {
 
@@ -39,7 +40,7 @@ public class ReflectionDbLoader {
 
 		try {
 			orm = Orm.getInstance(prop.getProperty("orm.config"));
-			BeanInfo beanInfo = orm.getBeanInfo(prop.getProperty("bean.class"));
+			BeanInfo beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.Record");
 			beanInfo.test();
 
 			Object record = beanInfo.getInstance(); // si puo fare di meglio?
@@ -59,22 +60,18 @@ public class ReflectionDbLoader {
 
 			System.out.println("\n ----------- Proxy part ------------- \n");
 			orm.save(record);
-			
+
 			for (int j = 0; j < 100; j++) {
 				MockRecord mockRecord = new MockRecord(beanInfo);
 				orm.save(mockRecord.next());
 			}
-			
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		} /*finally {
-			if (orm != null)
-				orm.destroy();
-		}*/
+		} /*
+			 * finally { if (orm != null) orm.destroy(); }
+			 */
 	}
-
-
 
 	public static Properties readProperties(String propFile) {
 		Properties prop = new Properties();
