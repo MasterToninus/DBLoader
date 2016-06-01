@@ -49,13 +49,12 @@ public class Orm {
 	private Orm(String xmlConfPath) throws OrmException {
 
 		String url = readOrmConfigFile(xmlConfPath);
-		Map<String, Object> overrides = c3p0Opts();
 
 		try {
 			// log.debug("Requesting Connection to " + connectionUrl );
 			//conn = DriverManager.getConnection(url); // throws SQLException
 			DataSource conn_unpooled = DataSources.unpooledDataSource(url);
-			conn_pooled = DataSources.pooledDataSource( conn_unpooled, overrides );
+			conn_pooled = DataSources.pooledDataSource( conn_unpooled );
 			if (conn_pooled != null)
 				log.debug("connection pool established!!!");
 
@@ -78,6 +77,7 @@ public class Orm {
 			// Get the two child Nodes (the structure is well-known)
 			Element dbSettingElement = (Element) (document.getElementsByTagName("DB-Settings")).item(0);
 			Element entitiesElement = (Element) (document.getElementsByTagName("Entities")).item(0);
+			Element c3p0Element = (Element) (document.getElementsByTagName("c3p0-Settings")).item(0);
 
 			// Parsing the db tag:
 			String username = dbSettingElement.getElementsByTagName("User").item(0).getTextContent();
@@ -89,9 +89,16 @@ public class Orm {
 			NodeList nEntitiesList = entitiesElement.getElementsByTagName("entity");
 			for (int temp = 0; temp < nEntitiesList.getLength(); temp++) {
 				Node node = nEntitiesList.item(temp);
-				System.out.println(""); // Just a separator
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
 					addBeanClass(((Element) node).getAttribute("class"));
+				}
+			}
+			
+			NodeList nPropertyList = c3p0Element.getElementsByTagName("property");
+			for (int temp = 0; temp < nPropertyList.getLength(); temp++) {
+				Node node = nPropertyList.item(temp);
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					System.setProperty(((Element) node).getAttribute("name"), ((Element) node).getTextContent());
 				}
 			}
 
@@ -108,14 +115,6 @@ public class Orm {
 
 	}
 	
-	Map<String, Object> c3p0Opts() {
-		Map<String, Object> overrides = new HashMap<String, Object>();
-		overrides.put("maxStatements", "200");         //Stringified property values work
-		overrides.put("maxPoolSize", new Integer(50)); //"boxed primitives" also work
-		overrides.put("com.mchange.v2.log.MLog", "log4j");
-		return overrides;
-	}
-
 	public void addBeanClass(String beanClassName) throws OrmException {
 		try {
 			addBeanClass(Class.forName(beanClassName));
