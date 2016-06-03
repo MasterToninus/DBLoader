@@ -143,7 +143,7 @@ public class BeanInfo {
 		}
 	}
 
-	public Class<?> getClazz() {
+	public Class<?> getType() {
 		return clazz;
 	}
 

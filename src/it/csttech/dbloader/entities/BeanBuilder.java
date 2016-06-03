@@ -48,7 +48,8 @@ public class BeanBuilder {
 	 */
 	public BeanBuilder init(String tableName) {
 		init = true;
-		this.classBuilder = new ByteBuddy().with(AnnotationRetention.ENABLED).subclass(Object.class)
+		this.classBuilder = new ByteBuddy().with(AnnotationRetention.ENABLED)
+				.subclass(Object.class)
 				.name("BB." + tableName)
 				.annotateType(AnnotationDescription.Builder.ofType(Entity.class)
 						.define("tableName", tableName.toUpperCase()).build());
@@ -66,7 +67,7 @@ public class BeanBuilder {
 	 * @return this
 	 */
 	public BeanBuilder addField(String fieldName, Class<?> fieldType, boolean isPrimary, boolean isGetter,
-			boolean isSetter, boolean isAutoIncrement) {
+			boolean isSetter, boolean isAutoIncrement, boolean isNotNull) {
 		
 		List<AnnotationDescription> annotations = new java.util.ArrayList<AnnotationDescription>();
 		
@@ -80,13 +81,15 @@ public class BeanBuilder {
 			annotations.add(AnnotationDescription.Builder.ofType(Setter.class).build());
 		if (isPrimary)annotations.add(AnnotationDescription.Builder.ofType(PrimaryKey.class).build());
 		if (isAutoIncrement)annotations.add(AnnotationDescription.Builder.ofType(AutoIncrement.class).build());
-	
+		if (isNotNull)annotations.add(AnnotationDescription.Builder.ofType(NotNull.class).build());
+		
 		String capitalFieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 		String getterName = (fieldType.equals(boolean.class))? "is" + capitalFieldName : "get" + capitalFieldName;
 		String setterName = "set" + capitalFieldName;
 
 		
-		this.classBuilder = this.classBuilder.defineField(fieldName, fieldType, Visibility.PUBLIC).annotateField(annotations)
+		this.classBuilder = this.classBuilder
+				.defineField(fieldName, fieldType, Visibility.PRIVATE).annotateField(annotations)
 				.defineMethod(getterName, fieldType, Modifier.PUBLIC).intercept(FieldAccessor.ofBeanProperty())
 				.defineMethod(setterName, Void.TYPE, Modifier.PUBLIC).withParameters(fieldType).intercept(FieldAccessor.ofBeanProperty());
 		return this;
@@ -106,9 +109,9 @@ public class BeanBuilder {
 		//Runtime bean class generation
 		BeanBuilder bb = new BeanBuilder();
 		bb.init("Tabellina");
-		bb.addField("id", Integer.class, false, true, true, false);
-		bb.addField("isBul", Boolean.class, false, true, true, false);
-		bb.addField("caratter", Character.class, false, true, true, false);
+		bb.addField("id", Integer.class, false, true, true, false , true);
+		bb.addField("isBul", Boolean.class, false, true, true, false, false);
+		bb.addField("caratter", Character.class, false, true, true, false, false);
 		Class<?> clazz = bb.load();
 
 		// Instantiation

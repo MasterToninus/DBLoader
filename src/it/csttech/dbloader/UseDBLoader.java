@@ -79,9 +79,9 @@ public class UseDBLoader {
 			//TODO (temp) usage scenario of BeanBuilder
 			log.info("Loading entity to db " );
 			BeanBuilder bb = new BeanBuilder();
-			bb.init("RunTime4");
-			bb.addField("id", int.class, true, true, true, true);
-			bb.addField("name", String.class, false, true, true, false);
+			bb.init("RunTime");
+			bb.addField("id", Integer.class, false, true, true, false, true);
+			bb.addField("name", String.class, false, true, true, false, false);
 			Class<?> clazz = bb.load();
 			orm.addBeanClass(clazz);
 			beanInfo = orm.getBeanInfo(clazz);

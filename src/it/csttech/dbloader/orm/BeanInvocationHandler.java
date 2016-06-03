@@ -23,10 +23,11 @@ public class BeanInvocationHandler implements InvocationHandler {
 			
 			Object result = null;
 			result = method.invoke(realSubject, args);
-			if (method.getName().startsWith("get") || method.getName().startsWith("is"))
-				log.trace("Getter result: " + result);
-			else if (method.getName().startsWith("set"))
-				log.trace("Setter args: " + args[0]);
+			String mName = method.getName();
+			if (mName.startsWith("get") || mName.startsWith("is"))
+				log.trace("Getter \"" + mName + "\" result: " + result);
+			else if (mName.startsWith("set"))
+				log.trace("Setter \"" + mName + "\" args: " + args[0]);
 			return result;
 		
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

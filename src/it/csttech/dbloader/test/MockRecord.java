@@ -13,7 +13,7 @@ import it.csttech.dbloader.entities.Record;
  * Preliminary version! (WIP)
  * 
  * <p>
- * Possible Extension: Basically it can be used to random generating an istance
+ * Possible Extension: Basically it can be used to random generating an instance
  * of any class using the reflection!!
  * <ul>
  * <li>constructor take inside a class object
@@ -129,7 +129,7 @@ public class MockRecord {
 			return () -> {
 				char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 				StringBuilder sb = new StringBuilder();
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < 6; i++) {
 					char c = chars[random.nextInt(chars.length)];
 					sb.append(c);
 				}

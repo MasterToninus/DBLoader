@@ -187,7 +187,8 @@ public class Orm implements AutoCloseable{
 		// rilascia o distrugge? nel conn pool rimane?
 		try (Connection conn = conn_pooled.getConnection()) {
 
-			// execute Create Table sl statment SQL stetement
+			// execute Create Table sl statment SQL stetement 
+			// TODO spostare eventualmente nelcostruttore.
 			log.debug("Executing \"Create Table\" statement.");
 			PreparedStatement preparedStatementCreate = conn.prepareStatement(beanInfo.getCreateTableQuery());
 			preparedStatementCreate.executeUpdate();
