@@ -33,26 +33,27 @@ import javax.sql.DataSource;
  * attributo di Orm all'interno di una mappa con key il nome anche con metodo
  * getclass possibile costruttore con argomento prop file
  *
+ *	Implenting AutoCloseable for  the try-with-resources statement.
+ *
  * @see <a href="https://docs.oracle.com/javase/tutorial/jaxp/dom/index.html">
  *      Dom Trail</a>
  */
-public class Orm {
+public class Orm implements AutoCloseable{
 
 	static private Orm orm = null;
-	private HashMap<Class<?>, BeanInfo> beanInfoMap = new HashMap<Class<?>, BeanInfo>();
 	static final Logger log = LogManager.getLogger(Orm.class.getName());
 
-	// private Connection conn = null;
 	private DataSource conn_pooled = null;
-
+	private HashMap<Class<?>, BeanInfo> beanInfoMap = new HashMap<Class<?>, BeanInfo>();
+	
 	private Orm() { }
 
 	private Orm(String xmlConfPath) throws OrmException {
-		log.info("Loading ORM configuration from : " + xmlConfPath);
+		log.info("Instantiating ORM object.");
 		String url = readOrmConfigFile(xmlConfPath);
 
 		try {
-			// log.debug("Requesting Connection to " + connectionUrl );
+			log.debug("Requesting Connection to " + url );
 			// conn = DriverManager.getConnection(url); // throws SQLException
 			DataSource conn_unpooled = DataSources.unpooledDataSource(url);
 			conn_pooled = DataSources.pooledDataSource( conn_unpooled );
@@ -65,12 +66,15 @@ public class Orm {
 	}
 
 	private String readOrmConfigFile(String xmlConfPath) throws OrmException {
+		log.info("Loading ORM configuration from : " + xmlConfPath);
 		try {
+			File xmlFile = new File(xmlConfPath);
+			if (!xmlFile.canRead()) throw new OrmException("Cannot Read " + xmlConfPath);
 			// Get Document Builder
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			// Build Document
-			Document document = dBuilder.parse(new File(xmlConfPath));
+			Document document = dBuilder.parse(xmlFile);
 
 			// Normalize the XML Structure; It's just too important !!
 			document.getDocumentElement().normalize(); // Scoprire cosa fa
@@ -121,7 +125,7 @@ public class Orm {
 		try {
 			addBeanClass(Class.forName(beanClassName));
 		} catch (ClassNotFoundException e) {
-			throw new OrmException("Class not Found", e);
+			throw new OrmException("Class " + beanClassName + " not Found", e);
 		}
 	}
 
@@ -164,42 +168,47 @@ public class Orm {
 
 	public void save(Object bean) throws OrmException {
 		Class<?> beanClazz = bean.getClass();
+		if(!beanInfoMap.containsKey(beanClazz)) throw new OrmException(beanClazz + " not loaded.");
+
+		//Creating a Proxy of the JavaBean
+		Enhancer enhancer = new Enhancer();
+		enhancer.setSuperclass(beanClazz);
+		enhancer.setCallback(new BeanInvocationHandler(bean));
+		Object proxy = enhancer.create();		
+
+		//Storing local variables
 		BeanInfo beanInfo = beanInfoMap.get(beanClazz);
+		log.info("Loading " + bean + " on " + beanInfo.getTableName());		
 		Set<String> fieldKeySet = beanInfo.getFieldKeySet();
 		Map<String, Method> getters = beanInfo.getGetters();
 
-		try {
-			//Creating a Proxy of the JavaBean
-			Enhancer enhancer = new Enhancer();
-			enhancer.setSuperclass(beanClazz);
-			enhancer.setCallback(new BeanInvocationHandler(bean));
-			Object proxy = enhancer.create();
+		log.debug("Getting pooled connection.");
+		// TODO chiedere: è giusto chiamare il connection.close() dopo ogni statement update?
+		// rilascia o distrugge? nel conn pool rimane?
+		try (Connection conn = conn_pooled.getConnection()) {
 
-			Connection conn = conn_pooled.getConnection();
+			// execute Create Table sl statment SQL stetement
+			log.debug("Executing \"Create Table\" statement.");
 			PreparedStatement preparedStatementCreate = conn.prepareStatement(beanInfo.getCreateTableQuery());
-
 			preparedStatementCreate.executeUpdate();
 
+			// execute insert SQL stetement
+			log.debug("Executing \"Insert record\" statement.");
 			PreparedStatement preparedStatementInsert = conn.prepareStatement(beanInfo.getInsertQuery());
-
 			int i = 1;
 			for (String key : fieldKeySet) {
 				Method m = getters.get(key);
-
 				if (!beanInfo.getFieldInfoMap().get(key).isAutoIncrement()) {
 					preparedStatementInsert.setObject(i, m.invoke(proxy));
 					i++;
 				}
 			}
-
-			// execute insert SQL stetement
 			preparedStatementInsert.executeUpdate();
 
+			log.debug("closing statements.");
 			preparedStatementCreate.close();
 			preparedStatementInsert.close();
-			conn.close();
-			// TODO chiedere: è giusto? rilascia o distrugge? nel conn pool
-			// rimane?
+
 
 			log.trace(beanInfo.getClassName() + " record is inserted into " + beanInfo.getTableName() + " table!");
 
@@ -208,12 +217,12 @@ public class Orm {
 		}
 	}
 
-	public void destroy() {
-		log.info("Releasing Connections");
+	public void close() {
+		log.info("Releasing Connections.");
 		if (conn_pooled != null) {
 			try {
 				DataSources.destroy(conn_pooled);
-				log.trace(" Connection freed");
+				log.trace(" Connection freed.");
 			} catch (SQLException sqlex) {
 				log.fatal(sqlex.getMessage());
 			}

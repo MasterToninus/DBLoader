@@ -24,7 +24,7 @@ public class BeanInfo {
 	private String tableName;
 	private String insertQuery;
 	private String createTableQuery;
-	// TODO private String varieQuery;
+	// TODO (possible extension) private String various other queries
 
 	/**
 	 * 
@@ -32,13 +32,14 @@ public class BeanInfo {
 	 * @throws BeanInfoException
 	 */
 	public BeanInfo(Class<?> clazz) throws BeanInfoException {
+		log.trace("Building BeanInfo for : " + clazz);
+		if (!clazz.isAnnotationPresent(Entity.class))
+			log.warn(clazz + "is not Annotated as Entity");
+
 		this.clazz = clazz;
 		this.clazzName = clazz.getName();
 		this.tableName = clazz.getAnnotation(Entity.class).tableName();
-		log.trace("Building BeanInfo for : " + clazz);
-
-		fieldInfoMap = fillFields(clazz.getDeclaredFields());
-
+		this.fieldInfoMap = fillFields(clazz.getDeclaredFields());
 		fillMethods();
 		generateQueries();
 
@@ -99,7 +100,7 @@ public class BeanInfo {
 		StringBuilder createTableQuery = new StringBuilder("CREATE TABLE IF NOT EXISTS " + tableName + " (");
 		for (String key : fieldInfoMap.keySet()) {
 			FieldInfo f = fieldInfoMap.get(key);
-			if (f.isAutoIncrement() && f.getTypeName().equals("INT"))
+			if (f.isAutoIncrement() && ( f.getType().equals(int.class) || f.getType().equals(Integer.class)))
 				createTableQuery.append(" " + f.getColumnName() + " " + "SERIAL");
 			else
 				createTableQuery.append(" " + f.getColumnName() + " " + f.getTypeName());
@@ -142,14 +143,6 @@ public class BeanInfo {
 		}
 	}
 
-	public HashMap<String, Method> getSetters() {
-		return setters;
-	}
-
-	public HashMap<String, Method> getGetters() {
-		return getters;
-	}
-
 	public Class<?> getClazz() {
 		return clazz;
 	}
@@ -159,6 +152,12 @@ public class BeanInfo {
 	}
 
 	// Restituisco object. dopo andrà castato!
+	/**
+	 * TODO can we take advantage of generics for this method?
+	 * @return
+	 * @throws java.lang.InstantiationException
+	 * @throws java.lang.IllegalAccessException
+	 */
 	public Object getInstance() throws java.lang.InstantiationException, java.lang.IllegalAccessException {
 		return clazz.newInstance();
 	}
@@ -195,4 +194,16 @@ public class BeanInfo {
 		return fieldInfoMap;
 	}
 
+	/**
+	 * TODO: maybe will be better if the hashmap keys are field variables?
+	 * @return
+	 */
+	public HashMap<String, Method> getSetters() {
+		return setters;
+	}
+
+	public HashMap<String, Method> getGetters() {
+		return getters;
+	}
+	
 }

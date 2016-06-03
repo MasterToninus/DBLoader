@@ -13,7 +13,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 		if (realSubject.getClass().isAnnotationPresent(Entity.class))
 			this.realSubject = realSubject;
 		else
-			throw new OrmException("Object you are proxying is not a bean.");
+			throw new OrmException("Object you are proxying is not an \"Entity\" bean.");
 	}
 
 	@Override

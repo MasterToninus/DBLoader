@@ -2,9 +2,7 @@ package it.csttech.dbloader.test;
 
 import java.lang.reflect.Method;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -39,7 +37,7 @@ public class MockRecord {
 	private Random random;
 
 	/**
-	 * Map which associate to each setters its "nextrandom" method
+	 * Map associating to each setters its "nextrandom" method
 	 */
 	private final Map<Method, RandomOperation> setterRandomMap;
 
@@ -65,9 +63,8 @@ public class MockRecord {
 	 * @return
 	 */
 	private Map<Method, RandomOperation> generateMapping() throws it.csttech.dbloader.orm.OrmException {
-		List<Method> setterList = new ArrayList<Method>(beanInfo.getSetters().values());
 		Map<Method, RandomOperation> mapping = new HashMap<Method, RandomOperation>();
-		for (Method m : setterList) {
+		for (Method m : beanInfo.getSetters().values()) {
 			Class<?> argType = m.getParameterTypes()[0];
 			mapping.put(m, objRelation(argType));
 		}
