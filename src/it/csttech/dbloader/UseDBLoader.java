@@ -59,7 +59,7 @@ public class UseDBLoader {
 		MockRecord mockRecord = null;
 
 		try ( Orm orm = Orm.getInstance(ormConfigFile) ) {
-/*
+
 			//TODO (temp) usage scenario of ORM
 			log.info("Loading entity to db " );
 			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.Record");
@@ -75,7 +75,7 @@ public class UseDBLoader {
 			beanInfo = orm.getBeanInfo("it.csttech.dbloader.entities.Address");
 			mockRecord = new MockRecord(beanInfo);
 			orm.save(mockRecord.next());
-*/
+
 			//TODO (temp) usage scenario of BeanBuilder
 			log.info("Loading entity to db " );
 			BeanBuilder bb = new BeanBuilder();
@@ -88,13 +88,14 @@ public class UseDBLoader {
 			mockRecord = new MockRecord(beanInfo);
 			orm.save(mockRecord.next());
 
-			log.info("DONE!!!" );
-
 		} catch (OrmException ex) {
 			log.error(ex.getMessage());
 			log.debug("Error Stack Trace:",ex);
 			log.fatal("System Exit");
 		}
+		
+		log.info("DONE!!!" );
+		
 	}
 
 
