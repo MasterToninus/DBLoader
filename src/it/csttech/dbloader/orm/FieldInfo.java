@@ -93,24 +93,24 @@ public class FieldInfo {
 	private static String ojb(Class<?> klazz) throws java.sql.SQLException {
 		if (klazz.equals(String.class))
 			return java.sql.JDBCType.VARCHAR.getName();
-		else if (klazz.isPrimitive())
-			return klazz.getName().toUpperCase();
-		else if (klazz.equals(Boolean.class))
+//		else if (klazz.isPrimitive())
+//			return klazz.getName().toUpperCase();
+		else if (klazz.equals(boolean.class) || klazz.equals(Boolean.class))
 			return java.sql.JDBCType.BOOLEAN.getName();
-		else if (klazz.equals(Integer.class))
+		else if (klazz.equals(int.class) || klazz.equals(Integer.class))
 			return java.sql.JDBCType.INTEGER.getName();
-		else if (klazz.equals(Character.class))
+		else if (klazz.equals(char.class) || klazz.equals(Character.class))
 			return java.sql.JDBCType.CHAR.getName();
-		else if (klazz.equals(Byte.class))
+		else if (klazz.equals(byte.class) || klazz.equals(Byte.class))
 			return java.sql.JDBCType.TINYINT.getName();
-		else if (klazz.equals(Short.class))
+		else if (klazz.equals(short.class) || klazz.equals(Short.class))
 			return java.sql.JDBCType.SMALLINT.getName();
-		else if (klazz.equals(Long.class))
+		else if (klazz.equals(long.class) || klazz.equals(Long.class))
 			return java.sql.JDBCType.BIGINT.getName();
-		else if (klazz.equals(Float.class))
+		else if (klazz.equals(float.class) || klazz.equals(Float.class))
 			return java.sql.JDBCType.FLOAT.getName();
-		else if (klazz.equals(Double.class))
-			return java.sql.JDBCType.DOUBLE.getName();
+		else if (klazz.equals(double.class) || klazz.equals(Double.class))
+			return "Double Precision";//java.sql.JDBCType.DOUBLE.getName();
 		else if (klazz.equals(java.sql.Date.class))
 			return java.sql.JDBCType.DATE.getName();
 		else

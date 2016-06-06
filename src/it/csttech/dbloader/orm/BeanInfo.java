@@ -100,7 +100,7 @@ public class BeanInfo {
 		StringBuilder createTableQuery = new StringBuilder("CREATE TABLE IF NOT EXISTS " + tableName + " (");
 		for (String key : fieldInfoMap.keySet()) {
 			FieldInfo f = fieldInfoMap.get(key);
-			if (f.isAutoIncrement() && ( f.getType().equals(int.class) || f.getType().equals(Integer.class)))
+			if (f.isAutoIncrement())
 				createTableQuery.append(" " + f.getColumnName() + " " + "SERIAL");
 			else
 				createTableQuery.append(" " + f.getColumnName() + " " + f.getTypeName());
@@ -121,7 +121,7 @@ public class BeanInfo {
 		int fieldCounter = 0;
 		for (String key : fieldInfoMap.keySet()) {
 			FieldInfo f = fieldInfoMap.get(key);
-			if (!(f.isAutoIncrement() && f.getTypeName().equals("INT"))) {
+			if (!(f.isAutoIncrement())) {
 				insertQuery.append(" " + f.getColumnName() + ",");
 				fieldCounter++;
 			}
