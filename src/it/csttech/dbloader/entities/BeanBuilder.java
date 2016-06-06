@@ -107,11 +107,10 @@ public class BeanBuilder {
 	 */
 	public static void main(String[] args) throws Exception {
 		//Runtime bean class generation
-		BeanBuilder bb = new BeanBuilder();
-		bb.init("Tabellina");
-		bb.addField("id", Integer.class, false, true, true, false , true);
-		bb.addField("isBul", Boolean.class, false, true, true, false, false);
-		bb.addField("caratter", Character.class, false, true, true, false, false);
+		BeanBuilder bb = new BeanBuilder("Tabellina")
+				.addField("id", Integer.class, false, true, true, false , true)
+				.addField("isBul", Boolean.class, false, true, true, false, false)
+				.addField("caratter", Character.class, false, true, true, false, false);
 		Class<?> clazz = bb.load();
 
 		// Instantiation
@@ -124,7 +123,7 @@ public class BeanBuilder {
 					.stream()
 					.map(annotation -> annotation.annotationType().getSimpleName())
 					.collect(java.util.stream.Collectors.toList()),
-				java.util.Arrays.asList(myBean.getClass().getFields())
+				java.util.Arrays.asList(myBean.getClass().getDeclaredFields())
 					.stream()
 					.map(field -> field.getName())
 					.collect(java.util.stream.Collectors.toList()),
