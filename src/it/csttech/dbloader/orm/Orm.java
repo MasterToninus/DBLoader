@@ -257,14 +257,15 @@ public class Orm implements AutoCloseable{
 		}
 	}
 
-	public void close() {
+	public void close() throws OrmException{
 		log.info("Releasing Connections.");
 		if (conn_pooled != null) {
 			try {
 				DataSources.destroy(conn_pooled);
 				log.trace(" Connection freed.");
 			} catch (SQLException sqlex) {
-				log.fatal(sqlex.getMessage());
+				throw new OrmException(sqlex);
+				//log.fatal(sqlex.getMessage());
 			}
 		}
 	}

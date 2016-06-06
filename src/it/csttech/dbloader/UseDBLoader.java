@@ -93,7 +93,9 @@ public class UseDBLoader {
 			log.debug("Error Stack Trace:",ex);
 			log.fatal("System Exit");
 		}
+
 		log.info("DONE!!!" );
+		
 	}
 
 
