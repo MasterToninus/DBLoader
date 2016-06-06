@@ -34,7 +34,7 @@ import it.csttech.dbloader.entities.Record;
 public class MockRecord {
 
 	private final BeanInfo beanInfo;
-	private Random random;
+	private final Random random;
 
 	/**
 	 * Map associating to each setters its "nextrandom" method
