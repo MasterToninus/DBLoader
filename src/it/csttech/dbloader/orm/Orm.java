@@ -2,7 +2,6 @@ package it.csttech.dbloader.orm;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,7 +25,6 @@ import java.sql.Connection;
 
 import com.mchange.v2.c3p0.DataSources;
 
-
 import javax.sql.DataSource;
 
 /**
@@ -34,55 +32,55 @@ import javax.sql.DataSource;
  * attributo di Orm all'interno di una mappa con key il nome anche con metodo
  * getclass possibile costruttore con argomento prop file
  *
- *	Implenting AutoCloseable for  the try-with-resources statement.
+ * Implenting AutoCloseable for the try-with-resources statement.
  *
  * @see <a href="https://docs.oracle.com/javase/tutorial/jaxp/dom/index.html">
  *      Dom Trail</a>
  */
-public class Orm implements AutoCloseable{
+public class Orm implements AutoCloseable {
 
 	static private Orm orm = null;
 	static final Logger log = LogManager.getLogger(Orm.class.getName());
 
 	private DataSource conn_pooled = null;
 	private HashMap<Class<?>, BeanInfo> beanInfoMap = new HashMap<Class<?>, BeanInfo>();
-	
-	private Orm() { }
+
+	private Orm() {
+	}
 
 	/**
 	 * 
 	 * @param xmlConfPath
 	 * @throws OrmException
 	 */
-	@SuppressWarnings("unchecked")
 	private Orm(String xmlConfPath) throws OrmException {
 		log.info("Instantiating ORM object.");
 		try {
 
-			Map<String,Object> properties = readOrmConfigFile(xmlConfPath);
+			OrmProperties ormProperties = readOrmConfigFile(xmlConfPath);
 
-			setSystemProperties((Map<String,String>) properties.get("system"));
-			createConnections((String) properties.get("url"));
-			initBeanClasses((Set<String>)  properties.get("classes"));
+			setSystemProperties(ormProperties.systemConfiguration);
+			createConnections(ormProperties.url);
+			initBeanClasses(ormProperties.beanClassNames);
 
 		} catch (java.sql.SQLException ex) {
 			throw new OrmException(ex.getMessage(), ex);
 		}
-		
+
 	}
 
 	/**
-	 * 	
+	 * 
 	 * @param xmlConfPath
 	 * @return HashMap: keys = ("classes", "system", "url")
 	 * @throws OrmException
 	 */
-	private Map<String,Object> readOrmConfigFile(String xmlConfPath) throws OrmException {
+	private OrmProperties readOrmConfigFile(String xmlConfPath) throws OrmException {
 		log.info("Loading ORM configuration from : " + xmlConfPath);
-		Map<String,Object> confMap = new HashMap<String,Object>();
 		try {
 			File xmlFile = new File(xmlConfPath);
-			if (!xmlFile.canRead()) throw new OrmException("Cannot Read " + xmlConfPath);
+			if (!xmlFile.canRead())
+				throw new OrmException("Cannot Read " + xmlConfPath);
 			// Get Document Builder
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -105,33 +103,30 @@ public class Orm implements AutoCloseable{
 
 			// Parsing the entities tag
 			NodeList nEntitiesList = entitiesElement.getElementsByTagName("entity");
-			Set<String> classSet = new java.util.HashSet<String>();
+			Set<String> beanClassNames = new java.util.HashSet<String>();
 			for (int temp = 0; temp < nEntitiesList.getLength(); temp++) {
 				Node node = nEntitiesList.item(temp);
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
-					classSet.add(((Element) node).getAttribute("class"));
+					beanClassNames.add(((Element) node).getAttribute("class"));
 				}
 			}
-			confMap.put("classes", classSet);
 
-			// Parsing the c3p0-Properties tag			
+			// Parsing the c3p0-Properties tag
 			NodeList nPropertyList = c3p0Element.getElementsByTagName("property");
-			Map<String,String> systemProp = new HashMap<String,String>(); 
+			Map<String, String> systemConfiguration = new HashMap<String, String>();
 			for (int temp = 0; temp < nPropertyList.getLength(); temp++) {
 				Node node = nPropertyList.item(temp);
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
-					systemProp.put(((Element) node).getAttribute("name"), ((Element) node).getTextContent());
+					systemConfiguration.put(((Element) node).getAttribute("name"), ((Element) node).getTextContent());
 				}
 			}
-			confMap.put("system", systemProp);
-			
+
 			log.debug("Driver Loading : " + driver);
 			Class.forName(driver);
 
 			String url = connectionUrl + "?user=" + username + "&password=" + password;
-			confMap.put("url", url);
-			
-			return confMap;
+
+			return new OrmProperties(url, systemConfiguration, beanClassNames);
 
 		} catch (javax.xml.parsers.ParserConfigurationException | org.xml.sax.SAXException | java.io.IOException
 				| ClassNotFoundException ex) {
@@ -139,29 +134,29 @@ public class Orm implements AutoCloseable{
 		}
 
 	}
-	
-	private void setSystemProperties(Map<String,String> systemProp){
+
+	private void setSystemProperties(Map<String, String> systemProp) {
 		log.debug("Loading system properties : " + systemProp);
-		for(String key : systemProp.keySet()){
+		for (String key : systemProp.keySet()) {
 			System.setProperty(key, systemProp.get(key));
-		}	
+		}
 	}
-	
+
 	private void createConnections(String url) throws java.sql.SQLException {
-		log.debug("Requesting Connection to " + url );
+		log.debug("Requesting Connection to " + url);
 
 		DataSource conn_unpooled = DataSources.unpooledDataSource(url);
-		conn_pooled = DataSources.pooledDataSource( conn_unpooled );
+		conn_pooled = DataSources.pooledDataSource(conn_unpooled);
 		if (conn_pooled != null)
-			log.debug("connection pool established!!!");	
+			log.debug("connection pool established!!!");
 	}
-	
-	private void initBeanClasses(Set<String> classes) throws OrmException{
-		for(String name : classes){
+
+	private void initBeanClasses(Set<String> classes) throws OrmException {
+		for (String name : classes) {
 			addBeanClass(name);
 		}
 	}
-	
+
 	public void addBeanClass(String beanClassName) throws OrmException {
 		try {
 			addBeanClass(Class.forName(beanClassName));
@@ -175,14 +170,14 @@ public class Orm implements AutoCloseable{
 		try (Connection conn = conn_pooled.getConnection()) {
 			beanInfo = new BeanInfo(beanClass);
 			beanInfoMap.put(beanClass, beanInfo);
-			
-			// execute Create Table sl statment SQL stetement 
+
+			// execute Create Table sl statment SQL stetement
 			log.debug("Executing \"Create Table\" statement.");
 			PreparedStatement preparedStatementCreate = conn.prepareStatement(beanInfo.getCreateTableQuery());
 			preparedStatementCreate.executeUpdate();
 			preparedStatementCreate.close();
-			
-		} catch (BeanInfoException | SQLException  e) {
+
+		} catch (BeanInfoException | SQLException e) {
 			throw new OrmException("", e);
 		}
 
@@ -216,17 +211,18 @@ public class Orm implements AutoCloseable{
 
 	public void save(Object bean) throws OrmException {
 		Class<?> beanClazz = bean.getClass();
-		if(!beanInfoMap.containsKey(beanClazz)) throw new OrmException(beanClazz + " not loaded.");
+		if (!beanInfoMap.containsKey(beanClazz))
+			throw new OrmException(beanClazz + " not loaded.");
 
-		//Creating a Proxy of the JavaBean
+		// Creating a Proxy of the JavaBean
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(beanClazz);
 		enhancer.setCallback(new BeanInvocationHandler(bean));
-		Object proxy = enhancer.create();		
+		Object proxy = enhancer.create();
 
-		//Storing local variables
+		// Storing local variables
 		BeanInfo beanInfo = beanInfoMap.get(beanClazz);
-		log.info("Loading " + bean + " on " + beanInfo.getTableName());		
+		log.info("Loading " + bean + " on " + beanInfo.getTableName());
 		Set<String> fieldKeySet = beanInfo.getFieldKeySet();
 		Map<String, Method> getters = beanInfo.getGetters();
 
@@ -249,7 +245,6 @@ public class Orm implements AutoCloseable{
 			log.debug("closing statement.");
 			preparedStatementInsert.close();
 
-
 			log.trace(beanInfo.getClassName() + " record is inserted into " + beanInfo.getTableName() + " table!");
 
 		} catch (Exception e) {
@@ -257,7 +252,7 @@ public class Orm implements AutoCloseable{
 		}
 	}
 
-	public void close() throws OrmException{
+	public void close() throws OrmException {
 		log.info("Releasing Connections.");
 		if (conn_pooled != null) {
 			try {
@@ -265,8 +260,20 @@ public class Orm implements AutoCloseable{
 				log.trace(" Connection freed.");
 			} catch (SQLException sqlex) {
 				throw new OrmException(sqlex);
-				//log.fatal(sqlex.getMessage());
 			}
 		}
 	}
+
+	private class OrmProperties {
+		protected String url;
+		protected Map<String, String> systemConfiguration;
+		protected Set<String> beanClassNames;
+
+		public OrmProperties(String url, Map<String, String> systemConfiguration, Set<String> beanClassNames) {
+			this.url = url;
+			this.systemConfiguration = systemConfiguration;
+			this.beanClassNames = beanClassNames;
+		}
+	}
+
 }
