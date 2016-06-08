@@ -7,13 +7,10 @@ import it.csttech.dbloader.test.MockRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
- * Run with -Dprop.File=file.prop
+ * Run with -Dorm.config=path/to/orm.xml
+ * or put orm.xml in project home.
  * 
  * @author drago-orsone, MasterToninus
  *
@@ -21,33 +18,18 @@ import java.util.Properties;
 public class UseDBLoader {
 
 	static final Logger log = LogManager.getLogger(UseDBLoader.class.getName());
+	static final String defaultOrmConfigPath = "./orm.xml";
 
 	public static void main(String[] args) {
-		// TODO temporary workaround
-		// Exception when it is not passed any propFile to the program?
-		if (System.getProperty("prop.File") == null) {
-			System.setProperty("prop.File", "dbloader_default.properties");
-			log.error("dbloader.properties not found. Loading Defaults");
+		String ormConfigPath;
+		try{
+			ormConfigPath = System.getProperty("orm.config").trim();
+		} catch( NullPointerException ex ) {
+			log.warn("ORM configuration file not found. Loading defaults.");
+			ormConfigPath = defaultOrmConfigPath;			
 		}
-
-		Properties prop = readProperties(System.getProperty("prop.File"));
-
-		new UseDBLoader(prop.getProperty("orm.config").trim());
-	}
-
-	public static Properties readProperties(String propFile) {
-		log.info("Parsing properties File : " + propFile);
-		Properties prop = new Properties();
-
-		// Java 7 AutoClosable
-		try (InputStream input = new FileInputStream(propFile)) {
-			// load a properties file
-			prop.load(input);
-		} catch (IOException ex) {
-			log.error(ex.getMessage());
-			log.debug(ex);
-		}
-		return prop;
+		
+		new UseDBLoader(ormConfigPath);
 	}
 
 	/**

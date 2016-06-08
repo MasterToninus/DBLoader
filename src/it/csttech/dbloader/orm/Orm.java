@@ -80,7 +80,7 @@ public class Orm implements AutoCloseable {
 		try {
 			File xmlFile = new File(xmlConfPath);
 			if (!xmlFile.canRead())
-				throw new OrmException("Cannot Read " + xmlConfPath);
+				throw new OrmException("Config file " + xmlConfPath + " not found");
 			// Get Document Builder
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
